@@ -28,7 +28,7 @@ app.use(
   })
 );
 
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
   console.log("App is listening on port 3000");
 });
 

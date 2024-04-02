@@ -5,16 +5,30 @@ const Question = require("./../models/questionModel");
 exports.getAllQuestions = async (req, res, next) => {
   const data = await Question.find();
 
-  if (!data) {
-    res.status(404).json({
-      status: "error",
-      message: "There is no such data in the database",
-    });
-  }
   res.status(200).json({
     status: "success",
     data,
   });
+  return next();
 };
 
-exports.createQuestion = async (req, res, next) => {};
+exports.createQuestion = async (req, res, next) => {
+  if (JSON.stringify(req.body) === "{}") {
+    res.status(400).json({
+      status: "Bad request",
+      message: "You must provide data to create a new question",
+    });
+    return;
+  }
+  try {
+    data = await Question.create(req.body);
+  } catch (err) {
+    console.log(err.message);
+  }
+
+  res.json({
+    status: "success",
+    data,
+  });
+  next();
+};
