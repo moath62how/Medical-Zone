@@ -32,6 +32,10 @@ const server = app.listen(process.env.PORT, () => {
   console.log("App is listening on port 3000");
 });
 
+app.get("/", (req, res) => {
+  res.sendFile("./public/data/Question_img/1712168637537.png");
+});
+
 app.use("/api/v1/questions", questionRoutes);
 app.use("/api/v1/sets", questionRoutes);
 

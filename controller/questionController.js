@@ -13,6 +13,8 @@ exports.getAllQuestions = async (req, res, next) => {
 };
 
 exports.createQuestion = async (req, res, next) => {
+  req.body.image = req.file.filename || null;
+
   if (JSON.stringify(req.body) === "{}") {
     res.status(400).json({
       status: "Bad request",
@@ -23,7 +25,10 @@ exports.createQuestion = async (req, res, next) => {
   try {
     data = await Question.create(req.body);
   } catch (err) {
-    console.log(err.message);
+    return res.status(400).json({
+      status: "Bad request",
+      message: err,
+    });
   }
 
   res.json({
