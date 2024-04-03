@@ -1,7 +1,7 @@
 require("dotenv").config({ path: __dirname + "/config.env" });
 const express = require("express");
 const morgan = require("morgan");
-
+const path = require("path");
 // var cookieParser = require("cookie-parser");
 const app = express();
 const mongoose = require("mongoose");
@@ -22,21 +22,27 @@ db.once("open", function () {
 });
 
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use(
   bodyParser.urlencoded({
     extended: true,
   })
 );
 
+app.set("view engine", "pug");
+
 const server = app.listen(process.env.PORT, () => {
   console.log("App is listening on port 3000");
 });
 
-app.get("/", (req, res) => {
-  res.sendFile("./public/data/Question_img/1712168637537.png");
-});
+// app.get("/", (req, res) => {
+//   res.render("./test.pug");
+// });
 
 app.use("/api/v1/questions", questionRoutes);
+
 app.use("/api/v1/sets", questionRoutes);
 
 process.on("unhandledRejection", (err) => {
