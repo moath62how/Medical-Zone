@@ -17,14 +17,9 @@ html(lang="en")
       input(type="text" id="tags" name="tags")
       br
       br
-      label(for="answers") Answers (separate by commas):
+      label(for="answers") Answers (separate by commas) (Optional):
       br
       textarea(id="answers" name="answers" rows="5" cols="30")
-      br
-      br
-      label(for="c_answer") Correct Answer:
-      br
-      input(type="text" id="c_answer" name="c_answer" required)
       br
       br
       label(for="explanation") Explanation (Optional):
@@ -35,6 +30,11 @@ html(lang="en")
       label(for="sub_question") Sub-question (Optional):
       br
       textarea(id="sub_question" name="sub_question" rows="3" cols="30")
+      br
+      br
+      label(for="c_answer") Correct Answer (separate by commas):
+      br
+      input(type="text" id="c_answer" name="c_answer" required)
       br
       br
       label(for="image") Image (Optional):

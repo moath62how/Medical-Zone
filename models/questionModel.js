@@ -12,7 +12,7 @@ const questionSchema = new mongoose.Schema({
     type: [String],
   },
   c_answer: {
-    type: String,
+    type: [String],
     required: [true, "A questions Must have an correct Answer"],
   },
   explanation: {
