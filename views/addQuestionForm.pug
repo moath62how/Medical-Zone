@@ -1,0 +1,45 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Create a Question
+  body
+    h1 Create a Question
+    form(action="/api/v1/questions" method="post" enctype="multipart/form-data")
+      label(for="question") Question Text:
+      br
+      textarea(id="question" name="question" rows="5" cols="30" required)
+      br
+      br
+      label(for="tags") Tags (separate by commas):
+      br
+      input(type="text" id="tags" name="tags")
+      br
+      br
+      label(for="answers") Answers (separate by commas):
+      br
+      textarea(id="answers" name="answers" rows="5" cols="30")
+      br
+      br
+      label(for="c_answer") Correct Answer:
+      br
+      input(type="text" id="c_answer" name="c_answer" required)
+      br
+      br
+      label(for="explanation") Explanation (Optional):
+      br
+      textarea(id="explanation" name="explanation" rows="5" cols="30")
+      br
+      br
+      label(for="sub_question") Sub-question (Optional):
+      br
+      textarea(id="sub_question" name="sub_question" rows="3" cols="30")
+      br
+      br
+      label(for="image") Image (Optional):
+      br
+      input(type="file" id="image" name="Q_image" accept="image/*")
+      br
+      br
+      button(type="submit") Create Question

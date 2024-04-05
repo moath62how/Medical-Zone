@@ -45,7 +45,9 @@ app.use("/api/v1/questions", questionRoutes);
 
 app.use("/api/v1/sets", questionRoutes);
 
-app.use("./create", (req, res, next) => {});
+app.get("/create", (req, res, next) => {
+  res.render("addQuestionForm");
+});
 process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);
   console.log("UNHANDLED REJECTION❗ SHUTTING DOWN....  ");
