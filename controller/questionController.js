@@ -13,18 +13,19 @@ exports.getAllQuestions = async (req, res, next) => {
 };
 
 exports.createQuestion = async (req, res, next) => {
-  if (req.body.image) {
-    req.body.image = req.file.filename || null;
-  }
-  if (JSON.stringify(req.body) === "{}") {
-    res.status(400).json({
-      status: "Bad request",
-      message: "You must provide data to create a new question",
-    });
-    return;
-  }
   try {
-    req.body.sub_questions = req.body.sub_questions.split(",");
+    if (req.body.image) {
+      req.body.image = req.file.filename || null;
+    }
+    if (JSON.stringify(req.body) === "{}") {
+      res.status(400).json({
+        status: "Bad request",
+        message: "You must provide data to create a new question",
+      });
+      return;
+    }
+
+    req.body.sub_questions = req.body.sub_question.split(",");
     req.body.c_answer = req.body.c_answer.split(",");
     req.body.tags = req.body.tags.split(",");
     req.body.answers = req.body.answers.split(",");
@@ -40,7 +41,6 @@ exports.createQuestion = async (req, res, next) => {
       message: err,
     });
   }
-
   res.json({
     status: "success",
     data,
