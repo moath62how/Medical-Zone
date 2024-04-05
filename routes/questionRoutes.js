@@ -2,26 +2,19 @@ const express = require("express");
 const multer = require("multer");
 const sharp = require("sharp");
 const path = require("path");
-const questionsController = require("../controller/questionController");
+const questionController = require("../controller/questionController");
+const { uploadFirebase } = require("../controller/firebaseController");
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./public/data/Question_img");
-  },
-  filename: (req, file, cb) => {
-    console.log(file);
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({
-  storage,
-});
+const upload = multer({ storage: multer.memoryStorage() });
 
 router
   .route("/")
-  .get(questionsController.getAllQuestions)
-  .post(upload.single("Q_image"), questionsController.createQuestion);
+  .get(questionController.getAllQuestions)
+  .post(
+    upload.single("Q_image"),
+    uploadFirebase,
+    questionController.createQuestion
+  );
 
 module.exports = router;

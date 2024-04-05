@@ -23,7 +23,11 @@ exports.createQuestion = async (req, res, next) => {
     return;
   }
   try {
-    data = await Question.create(req.body);
+    file = {
+      ...req.body,
+      image: req.imgData.downloadURL,
+    };
+    data = await Question.create(file);
   } catch (err) {
     return res.status(400).json({
       status: "Bad request",

@@ -3,18 +3,17 @@ const mongoose = require("mongoose");
 const questionSchema = new mongoose.Schema({
   question: {
     type: String,
-    required: true,
+    required: [true, "A questions Must have an text"],
   },
   tags: {
     type: [String],
   },
   answers: {
     type: [String],
-    required: true,
   },
   c_answer: {
     type: String,
-    required: true,
+    required: [true, "A questions Must have an correct Answer"],
   },
   explanation: {
     type: String,
