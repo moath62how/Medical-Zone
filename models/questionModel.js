@@ -19,7 +19,7 @@ const questionSchema = new mongoose.Schema({
     type: String,
   },
   sub_question: {
-    type: String,
+    type: [String],
   },
   image: {
     type: String,

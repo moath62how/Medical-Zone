@@ -24,6 +24,11 @@ exports.createQuestion = async (req, res, next) => {
     return;
   }
   try {
+    req.body.sub_questions = req.body.sub_questions.split(",");
+    req.body.c_answer = req.body.c_answer.split(",");
+    req.body.tags = req.body.tags.split(",");
+    req.body.answers = req.body.answers.split(",");
+
     file = {
       ...req.body,
       image: req.imgData.downloadURL,
@@ -40,5 +45,6 @@ exports.createQuestion = async (req, res, next) => {
     status: "success",
     data,
   });
+
   next();
 };
