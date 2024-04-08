@@ -25,7 +25,7 @@ exports.createQuestion = async (req, res, next) => {
       return;
     }
 
-    req.body.sub_questions = req.body.sub_question.split(",");
+    req.body.sub_question = req.body.sub_question.split(",");
     req.body.c_answer = req.body.c_answer.split(",");
     req.body.tags = req.body.tags.split(",");
     req.body.answers = req.body.answers.split(",");
