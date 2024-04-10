@@ -71,4 +71,4 @@ async function getQuestionId() {
   fs.writeFileSync(`${__dirname}/text.txt`, arr.join(","));
 }
 
-getQuestionId();
+// getQuestionId();
