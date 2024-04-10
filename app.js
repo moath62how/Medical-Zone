@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const db = mongoose.connection;
 const bodyParser = require("body-parser");
 const questionRoutes = require("./routes/questionRoutes");
+const setsRoutes = require("./routes/setsRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -43,7 +44,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/questions", questionRoutes);
 
-app.use("/api/v1/sets", questionRoutes);
+app.use("/api/v1/sets", setsRoutes);
 
 app.get("/create", (req, res, next) => {
   res.render("addQuestionForm");
@@ -53,3 +54,21 @@ process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION❗ SHUTTING DOWN....  ");
   server.close(() => process.exit(1));
 });
+
+const fs = require("fs");
+const Question = require("./models/questionModel");
+
+async function getQuestionId() {
+  var arr = [];
+  try {
+    const data = await Question.find();
+    data.forEach((ele) => {
+      arr.push(ele.id);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+  fs.writeFileSync(`${__dirname}/text.txt`, arr.join(","));
+}
+
+getQuestionId();

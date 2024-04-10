@@ -12,13 +12,12 @@ const setSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
+    default: "Has a lot of Questions that will bes helpful to you.",
   },
-  type: {
+  img: {
     type: String,
-    // required: true,
   },
 });
 
-const Sets = mongoose.models("Sets", setSchema);
+const Sets = mongoose.model("Sets", setSchema);
 module.exports = Sets;
