@@ -9,6 +9,7 @@ const db = mongoose.connection;
 const bodyParser = require("body-parser");
 const questionRoutes = require("./routes/questionRoutes");
 const setsRoutes = require("./routes/setsRoutes");
+const viewRoutes = require("./routes/viewRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -38,17 +39,16 @@ const server = app.listen(process.env.PORT, () => {
   console.log("App is listening on port 3000");
 });
 
-app.get("/", (req, res) => {
-  res.send("hello ,world!");
-});
+// app.get("/", (req, res) => {
+//   res.send("hello ,world!");
+// });
 
 app.use("/api/v1/questions", questionRoutes);
 
 app.use("/api/v1/sets", setsRoutes);
 
-app.get("/create", (req, res, next) => {
-  res.render("addQuestionForm");
-});
+app.use("/", viewRoutes);
+
 process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);
   console.log("UNHANDLED REJECTION❗ SHUTTING DOWN....  ");
@@ -63,7 +63,7 @@ async function getQuestionId() {
   try {
     const data = await Question.find();
     data.forEach((ele) => {
-      arr.push(ele.id);
+      arr.push("'" + ele.id + "'");
     });
   } catch (err) {
     console.log(err);

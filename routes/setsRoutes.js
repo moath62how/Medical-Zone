@@ -12,4 +12,12 @@ router
   .get(setsController.getAllSets)
   .post(upload.single("S_image"), uploadFirebase, setsController.createSet);
 
+router
+  .route("/:id")
+  .patch(
+    upload.single("S_image"),
+    uploadFirebase,
+    setsController.findAndUpdateSet
+  )
+  .get(setsController.getSet);
 module.exports = router;
