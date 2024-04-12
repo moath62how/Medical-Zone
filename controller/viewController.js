@@ -5,3 +5,8 @@ exports.getHome = async (req, res, next) => {
 
   res.render("questionCards", { sets: data });
 };
+exports.getChoice = (choices) => {
+  return (req, res, next) => {
+    res.render("choiceBtn", { choices });
+  };
+};

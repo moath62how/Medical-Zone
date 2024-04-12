@@ -1,0 +1,6 @@
+extends header.pug
+
+block content
+    #container
+        each choice in choices 
+            a.btn.rounded-5(href=`./${choice}/`) #{choice}

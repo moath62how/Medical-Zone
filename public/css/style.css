@@ -32,7 +32,6 @@ body {
 .nav-bar {
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   list-style: none;
   position: relative;
@@ -41,9 +40,13 @@ body {
 }
 .logo img {
   width: 200px;
+  flex: 0 0 auto;
 }
 .menu {
   display: flex;
+  list-style: none;
+  justify-content: center;
+  margin-left: 20vw;
 }
 .menu li {
   padding-left: 30px;

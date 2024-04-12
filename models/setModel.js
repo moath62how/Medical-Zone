@@ -17,6 +17,10 @@ const setSchema = new mongoose.Schema({
   img: {
     type: String,
   },
+  type: {
+    type: String,
+    required: true,
+  },
 });
 
 const Sets = mongoose.model("Sets", setSchema);

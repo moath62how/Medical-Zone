@@ -39,10 +39,6 @@ const server = app.listen(process.env.PORT, () => {
   console.log("App is listening on port 3000");
 });
 
-// app.get("/", (req, res) => {
-//   res.send("hello ,world!");
-// });
-
 app.use("/api/v1/questions", questionRoutes);
 
 app.use("/api/v1/sets", setsRoutes);

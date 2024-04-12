@@ -3,7 +3,7 @@ extends header.pug
 block content
     .container
     each set in sets
-        .card(style="width: 18rem")
+        a.card(style="width: 18rem" href=`./${set.type}/`)
             img.card-img-top(src=`${set.img}` alt=`${set.name}`)
-            .card-body
-                p.card-text #{set.name}
+            .card-body.text-center
+                p.card-text #{set.type} 
