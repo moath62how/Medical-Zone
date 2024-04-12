@@ -2,6 +2,12 @@ const express = require("express");
 const router = express.Router();
 const viewController = require("../controller/viewController");
 
+
+
+router.route("/create").get((req, res, next) => {
+  res.render("addQuestionForm");
+});
+
 router.route("/").get(viewController.getHome);
 
 router.route("/:type").get(viewController.getChoice(["FOMSCU"]));
@@ -24,8 +30,5 @@ router
 
 router.route("/:type").get(viewController.getChoice(["FOMSCU"]));
 
-router.route("/create").get((req, res, next) => {
-  res.render("addQuestionForm");
-});
 
 module.exports = router;
