@@ -1,9 +1,11 @@
 extends header.pug
 
 block content
-    .container
-    each set in sets
-        a.card(style="width: 18rem" href=`./${set.type}/`)
-            img.card-img-top(src=`${set.img}` alt=`${set.name}`)
-            .card-body.text-center
-                p.card-text #{set.type} 
+    .container-lg
+        .row.row-cols-md-3.row-cols-xs-2
+            each set in sets
+                .col.mb-3
+                    a.card(href=`./${set.type}/`)
+                        img.card-img-top(src=`${set.img}` alt=`${set.name}`)
+                        .card-body.text-center
+                            p.card-text #{set.type} 

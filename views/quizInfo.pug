@@ -1,0 +1,15 @@
+extends header.pug
+
+block content
+
+    body(data-id=`${id}`)
+    .container.d-flex.flex-column.justify-content-center.align-items-center.h-80
+      span#testName.rounded-5.text-primary.bg-black.w-50.text-center.fs-1 OSPE-1
+      #Data.w-60.rounded-5.h-90.p-3(style="background-color: #e5e9fb")
+        | This test contains:
+      a#start.btn.w-50.rounded-5.btn-lg(style=`
+          background: no-repeat center
+            linear-gradient(to left, #c29ea8, #746fed);
+        `)
+        | Start
+    script(type="module", src="./js/main.js")

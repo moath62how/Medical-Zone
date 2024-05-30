@@ -7,7 +7,7 @@ const setSchema = new mongoose.Schema({
   },
   questions: {
     type: [mongoose.Schema.Types.ObjectId],
-    ref: "Questions",
+    ref: "Question",
     required: true,
   },
   description: {

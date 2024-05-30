@@ -1,6 +1,6 @@
 extends header.pug
 
 block content
-    #container
+    .container.d-flex.flex-column.justify-content-center.align-items-center
         each choice in choices 
             a.btn.rounded-5(href=`./${choice}/`) #{choice}

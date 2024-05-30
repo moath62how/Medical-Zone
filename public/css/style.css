@@ -13,22 +13,6 @@ body {
   background-attachment: fixed;
 }
 
-/* 
-
-.container::-webkit-scrollbar {
-  width: 10px;
-}
-.container::-webkit-scrollbar-track {
-  background-color: transparent !important;
-}
-.container::-webkit-scrollbar-thumb {
-  background-color: #606060;
-  border-radius: 20px;
-}
-.container::-webkit-scrollbar-thumb:hover {
-  background-color: #909090;
-} */
-
 .nav-bar {
   width: 100%;
   display: flex;
@@ -120,6 +104,10 @@ body {
   #check:checked ~ .menu {
     right: 0;
   }
+  .container {
+    margin: 10px;
+    padding: 0;
+  }
 }
 .card {
   text-decoration: none;
@@ -142,21 +130,26 @@ body {
 body {
   overflow-x: hidden;
 }
-.container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Defines 3 columns of equal size */
-  grid-gap: 10px; /* Margin between columns */
-}
-.btn {
+
+.container > .btn {
   background: no-repeat center linear-gradient(to left, #c29ea8, #746fed);
   width: 40vw;
 }
-#container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
+
 #container > * {
   margin: 15px;
+}
+.btn__image {
+  color: white;
+  text-decoration: none;
+  width: 100px;
+  height: 100px;
+}
+.btn__image > i {
+  font-size: 2em;
+  color: #000;
+}
+.btn__image > span {
+  font-size: 2em;
+  -webkit-text-stroke: 1px #000;
 }
