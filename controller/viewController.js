@@ -7,7 +7,10 @@ exports.getHome = async (req, res, next) => {
 };
 exports.getChoice = (choices) => {
   return (req, res, next) => {
-    res.render("choiceBtn", { choices });
+    var title = req.path.charAt(0).toUpperCase() + req.path.slice(1);
+    title = title.substring(1, title.length - 1);
+
+    res.render("choiceBtn", { choices, title });
   };
 };
 
@@ -32,4 +35,12 @@ exports.getQuizStart = async (req, res, next) => {
   const id = req.params.id;
 
   res.status(200).render("quiz", { id });
+};
+
+exports.getLogin = async (req, res, next) => {
+  res.status(200).render("login");
+};
+
+exports.getDashboard = async (req, res, next) => {
+  res.status(200).render("adminDashboard");
 };

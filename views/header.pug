@@ -18,18 +18,18 @@ html(lang="en")
         ul.nav-bar
           li.logo
             a(href="/")
-              img(src="/imgs/logo.svg")
+              img(src="/imgs/logo.svg" alt="logo")
           input(type="checkbox" id="check")
           span.menu
-            li: a(href="") Home
+            li: a(href="/home") Home
             li: a(href="") Products
             li: a(href="") Services
             li: a(href="") About
             li: a(href="") Contact
             label.close-menu(for="check")
-                i.fas.fa-times
+                i.bi.bi-x
           label.open-menu(for="check")
-              i.fas.fa-bars
+              i.bi.bi-list
     block content
   block footer
     footer

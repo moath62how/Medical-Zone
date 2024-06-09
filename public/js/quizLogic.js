@@ -15,19 +15,20 @@ async function getData(URL) {
   }
 }
 
+// This is used to get the io if the Question set
+
 const id = document.querySelector("head").dataset.id;
 
-// console.log(document.querySelectorAll("head"));
-
+//The api URL that will be called
 const URL = "/api/v1/sets/" + id;
 
 window.addEventListener("load", () => {
   const body = document.querySelector("#q_body");
   const checkbox = document.querySelector("#hideAnswer");
   const question = document.querySelector("#questionText");
-  console.log(question);
   const img = document.querySelector("img");
   const toggelBtn = document.getElementById("show-hide-icon");
+
   toggelBtn.style.cursor = "pointer";
 
   toggelBtn.addEventListener("click", () => {
@@ -41,13 +42,20 @@ window.addEventListener("load", () => {
 
   (async () => {
     const response = await getData(URL);
+
     updateQuestion(0, response.data.questions);
+
     const nxtBtn = document.querySelector("#next_btn");
     const bckBtn = document.querySelector("#back_btn");
+
     nxtBtn.addEventListener("click", () => {
-      indexQuestion++;
-      updateQuestion(indexQuestion, response.data.questions);
+      if (indexQuestion < 19) {
+        indexQuestion++;
+        updateQuestion(indexQuestion, response.data.questions);
+      } else if (indexQuestion == 19) {
+      }
     });
+
     bckBtn.addEventListener("click", () => {
       if (indexQuestion != 0) {
         indexQuestion--;
@@ -66,7 +74,13 @@ window.addEventListener("load", () => {
 
   const updateQuestion = function (i, questions) {
     body.innerHTML = "";
-    img.setAttribute("src", questions[i].image);
+    if (questions[i].image) {
+      img.style.display = "block";
+      img.setAttribute("src", questions[i].image);
+    } else {
+      img.style.display = "none";
+    }
+
     question.innerText = questions[i].question;
 
     for (let j = 0; j < questions[i].sub_question.length; j++) {

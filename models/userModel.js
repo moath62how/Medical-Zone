@@ -26,8 +26,19 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "Student"],
+    enum: ["admin", "student"],
   },
+});
+
+userSchema.pre("save", async function (next) {
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password") || this.isNew) {
+    this.passwordChangedAt = Date.now() - 1000;
+  }
+  return next();
 });
 
 const User = mongoose.model("User", userSchema);

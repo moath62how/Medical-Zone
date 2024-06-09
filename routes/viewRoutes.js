@@ -6,7 +6,11 @@ router.route("/create").get((req, res, next) => {
   res.render("addQuestionForm");
 });
 
-router.route("/").get(viewController.getHome);
+router.route("/login").get(viewController.getLogin);
+
+router.route("/Dashboard").get(viewController.getDashboard);
+
+router.route(["/", "/home"]).get(viewController.getHome);
 
 router.route("/:id([a-fA-F0-9]{24})").get(viewController.getQuizInfo);
 
@@ -16,6 +20,9 @@ router.route("/:type").get(viewController.getChoice(["FOMSCU"]));
 
 router
   .route("/:type/:faculty")
+  .get(viewController.getChoice(["lectures", "Questions", "Labs"]));
+router
+  .route("/:type/:faculty/Labs")
   .get(
     viewController.getChoice([
       "ANATOMY",
