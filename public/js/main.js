@@ -49,10 +49,15 @@ function countFrequency(arr) {
   title.innerText = response.data.name;
 
   for (const [key, value] of Object.entries(questionsStats)) {
-    const div = document.createElement("div");
-    div.innerText = `${value} ${key}  ${value > 1 ? "questions" : "question"}`;
-    div.classList.add("my-1");
-    containerDiv.appendChild(div);
+    //!hard coded👇
+    if (isNaN(+key) && key != "FOMSCU") {
+      const div = document.createElement("div");
+      div.innerText = `${value} ${key}  ${
+        value > 1 ? "questions" : "question"
+      }`;
+      div.classList.add("my-1");
+      containerDiv.appendChild(div);
+    }
   }
 
   const description = document.createElement("div");

@@ -22,7 +22,7 @@ const id = document.querySelector("head").dataset.id;
 //The api URL that will be called
 const URL = "/api/v1/sets/" + id;
 
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
   const body = document.querySelector("#q_body");
   const checkbox = document.querySelector("#hideAnswer");
   const question = document.querySelector("#questionText");
@@ -42,9 +42,8 @@ window.addEventListener("load", () => {
 
   (async () => {
     const response = await getData(URL);
-
+    document.title = response.data.name;
     updateQuestion(0, response.data.questions);
-
     const nxtBtn = document.querySelector("#next_btn");
     const bckBtn = document.querySelector("#back_btn");
 
@@ -53,6 +52,8 @@ window.addEventListener("load", () => {
         indexQuestion++;
         updateQuestion(indexQuestion, response.data.questions);
       } else if (indexQuestion == 19) {
+        //Add what will hapen when the user reaches the end of the question set.
+        console.log("There is no more question");
       }
     });
 
@@ -74,6 +75,10 @@ window.addEventListener("load", () => {
 
   const updateQuestion = function (i, questions) {
     body.innerHTML = "";
+    // this was used to check when are the images being rendered
+    //// img.onload = () => {
+    ////   console.log("loaded");
+    //// };
     if (questions[i].image) {
       img.style.display = "block";
       img.setAttribute("src", questions[i].image);
@@ -82,7 +87,10 @@ window.addEventListener("load", () => {
     }
 
     question.innerText = questions[i].question;
-
+    if (questions[i].question.length > 30) {
+      question.classList.add("fs-5");
+    } else {
+    }
     for (let j = 0; j < questions[i].sub_question.length; j++) {
       const sub_q = document.createElement("span");
       const ans = document.createElement("span");

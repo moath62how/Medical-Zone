@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 const questionRoutes = require("./routes/questionRoutes");
 const setsRoutes = require("./routes/setsRoutes");
 const viewRoutes = require("./routes/viewRoutes");
+const EduModRoutes = require("./routes/eduModRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -42,6 +43,8 @@ const server = app.listen(process.env.PORT, () => {
 app.use("/api/v1/questions", questionRoutes);
 
 app.use("/api/v1/sets", setsRoutes);
+
+app.use("/api/v1/EduMod", EduModRoutes);
 
 app.use("/", viewRoutes);
 

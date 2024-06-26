@@ -7,17 +7,10 @@ const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-router
-  .route("/")
-  .get(setsController.getAllSets)
-  .post(upload.single("S_image"), uploadFirebase, setsController.createSet);
+router.route("/").get(setsController.getAllSets).post(setsController.createSet);
 
 router
   .route("/:id")
-  .patch(
-    upload.single("S_image"),
-    uploadFirebase,
-    setsController.findAndUpdateSet
-  )
+  .patch(setsController.findAndUpdateSet)
   .get(setsController.getSet);
 module.exports = router;

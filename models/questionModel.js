@@ -21,9 +21,6 @@ const questionSchema = new mongoose.Schema({
   sub_question: {
     type: [String],
   },
-  lab: {
-    type: String,
-  },
   image: {
     type: String,
     required: false,

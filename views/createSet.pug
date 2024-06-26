@@ -1,0 +1,42 @@
+extends _header.pug
+
+block content
+    .mb-3.w-50  
+        label(for="setName" class="form-label") Enter Set name :
+        input(type="text" id="setName" class="form-control form-control-sm " placeholder="New set name here...")
+    .mb-3.w-50  
+        label(for="modName" class="form-label") Enter the name of the education module :
+        input(type="text" id="modName" class="form-control form-control-sm " placeholder="Renal,CNS,GIS,.......")
+    .mb-3.w-50  
+        label(for="SetTags" class="form-label") Enter Set tags (Each tag is seprated by a comma) :
+        textarea( id="SetTags" class="form-control" placeholder=".......")
+    .col-12.w-50 
+        label( class="visually-hidden" for="inlineFormSelectPref")  Set type
+        select(class="form-select" id="inlineFormSelectPref")    
+            option(selected) Choose the set type
+            option(value="Labs") Labs
+            option(value="Lectures") Lectures
+            option(value="Seminars") Seminars  
+    .container-fluid
+        fieldset(class="row mb-3")
+            legend(class="col-form-label col-sm-2 pt-0") Question formats :
+            .col-sm-10
+                .form-check
+                    input(type="radio", name="MCQ_MEQ" id="mcq_radio"  class="form-check-input" value="MCQ" checked)
+                    label(class="form-check-label" for="mcq_radio") MCQ
+                .form-check
+                    input(type="radio", name="MCQ_MEQ" id="meq_radio"  class="form-check-input"  value="MEQ" )
+                    label(class="form-check-label" for="meq_radio") MEQ 
+    .mb-3.w-50 
+        button.btn.btn-secondary.mx-1(type='button' id="addQ")
+            |Add a question              
+            i.fas.fa-plus.ms-2
+        button.btn.btn-danger.mx-1(type='button' id='removeQ')
+            | Remove the last added question
+            i.fas.fa-minus.ms-2    
+    .container#main 
+        
+    .mb-3.w-50
+        button.btn.btn-success.mx-1(type='button' id='sendData')
+            | Send Data
+            i.fas.fa-paper-plane.ms-2  

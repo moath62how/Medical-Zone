@@ -8,18 +8,27 @@ const setSchema = new mongoose.Schema({
   questions: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Question",
-    required: true,
   },
   description: {
     type: String,
     default: "Has a lot of Questions that will bes helpful to you.",
   },
-  img: {
+  tags: {
+    type: [String],
+  },
+  educationalModule: {
     type: String,
+    required: true,
   },
   type: {
     type: String,
     required: true,
+    enum: ["Labs", "Lectures", "Seminars"],
+  },
+  format: {
+    type: String,
+    required: true,
+    enum: ["MCQ", "MEQ"],
   },
 });
 

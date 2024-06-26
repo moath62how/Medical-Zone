@@ -3,9 +3,9 @@ extends header.pug
 block content
     .container-lg
         .row.row-cols-md-3.row-cols-xs-2
-            each set in sets
+            each mod in eduMod
                 .col.mb-3
-                    a.card(href=`./${set.type}/`)
-                        img.card-img-top(src=`${set.img}` alt=`${set.name}`)
+                    a.card(href=`./${mod.name}/`)
+                        img.card-img-top(src=`${mod.image}` alt=`${mod.name}`  loading="lazy")
                         .card-body.text-center
-                            p.card-text #{set.type} 
+                            p.card-text #{mod.name} 
