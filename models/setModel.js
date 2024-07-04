@@ -8,6 +8,7 @@ const setSchema = new mongoose.Schema({
   questions: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Question",
+    required: false,
   },
   description: {
     type: String,

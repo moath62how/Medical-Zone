@@ -1,11 +1,11 @@
-const setsAPI = "./api/v1/sets/";
-const QuestionsAPI = "./api/v1/question/";
+const setsAPI = "/api/v1/sets/";
+const QuestionsAPI = "/api/v1/question/";
 
 document.addEventListener("DOMContentLoaded", function () {
   var questionCounter = 0;
-
+  var questionType;
   document.getElementById("addQ").addEventListener("click", function () {
-    var questionType = document.querySelector(
+    questionType = document.querySelector(
       'input[name="MCQ_MEQ"]:checked'
     ).value;
     if (questionType === "MCQ") {
@@ -122,40 +122,152 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     } else if (questionType == "MEQ") {
+      for (let i = 1; i <= questionCounter; i++) {
+        var Q_image = document.getElementById(`Q_image_${i}`).value;
+        var Q_subAnswers = document
+          .getElementById(`Q_subAnswers_${i}`)
+          .value.trim();
+        var Q_subQuestions = document
+          .getElementById(`Q_subQuestions_${i}`)
+          .value.trim();
+        var Q_header = document.getElementById(`Q_header_${i}`).value.trim();
+        var Q_tags = document.getElementById(`Q_tags_${i}`).value.trim();
+        if (
+          Q_header === "" ||
+          Q_tags === "" ||
+          Q_subAnswers === "" ||
+          Q_subQuestions === ""
+        ) {
+          allFieldsFilled = false;
+          questionsWithMistakes.push(i);
+        } else {
+          const formData = new FormData();
+
+          formData.set(
+            "Q_image",
+            document.getElementById(`Q_image_${i}`).files[0]
+          );
+          //! remember to throw and error if they arent equal in size
+          Q_subQuestions = Q_subQuestions.split(",");
+          Q_subAnswers = Q_subAnswers.split(",");
+
+          if (Q_subAnswers.length !== Q_subQuestions.length) {
+            // will work as if an error was thrown
+            allFieldsFilled = false;
+            questionsWithMistakes.push(i);
+            continue;
+          }
+
+          const obj = {
+            question: Q_header,
+            c_answer: Q_subAnswers,
+            sub_question: Q_subQuestions,
+            tags: Q_tags.split(","),
+          };
+
+          for (const [key, value] of Object.entries(obj)) {
+            formData.set(key, value);
+          }
+
+          questionData.push(formData);
+        }
+      }
     }
 
     // check if the set's fields is empty
     if (
-      document.getElementById("#setName").value === "" ||
-      document.getElementById("#modName").value === "" ||
-      document.getElementById("#SetTags").value === "" ||
-      document.getElementById("#inlineFormSelectPref").value == ""
+      document.getElementById("setName").value === "" ||
+      document.getElementById("modName").value === "" ||
+      document.getElementById("SetTags").value === "" ||
+      document.getElementById("inlineFormSelectPref").value ===
+        "Choose the set type"
     ) {
       allFieldsFilled = false;
     }
+
     if (allFieldsFilled && questionCounter != 0) {
-      alert("All fields contain data. Sending data...");
-      // a call to the back end that will create the questions first then the set
-      console.log(questionData);
+      Toastify({
+        text: "All fields contain data. Sending data...",
+        duration: 3000, // Duration in milliseconds
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)", // Green color gradient
+        onClick: function () {}, // Callback after click
+      }).showToast();
+
+      const obj = {
+        name: document.getElementById("setName").value,
+        tags: document.getElementById("SetTags").value.split(","),
+        type: document.getElementById("inlineFormSelectPref").value,
+        format: questionType,
+        educationalModule: document.getElementById("modName").value,
+      };
+
+      let setId;
+
+      createSet(obj, setsAPI).then((res) => {
+        setId = res.data.data._id;
+      });
+
       // Add your code here to send the data
     } else {
-      const myPopup = new Popup({
-        id: "err-popup",
-        title: "Please fill in all fields before sending data.",
-        content: `there is problems with the questions or the set`,
-        blur: true,
-        css: `
-        .popup-header {
-            font-weight: bold;
-            background-color: #C80036;
-        }
-          .popup-title{
-            font-size: 18pt;
-            margin-top: 3vh;
-            }
-        `,
-      });
-      myPopup.show();
+      Toastify({
+        text: "Please fill in all fields before sending data. There are problems with the questions or the set.",
+        duration: 5000, // Duration in milliseconds
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        backgroundColor: "#C80036", // Red background color
+        className: "toast-error", // Optional additional class for styling
+        onClick: function () {}, // Callback after click
+      }).showToast();
     }
   });
 });
+
+async function createSet(data, setsAPI) {
+  try {
+    const res = await axios.post(window.location.origin + setsAPI, data);
+    return res;
+  } catch (error) {
+    // Create a new Popup instance
+    Toastify({
+      text: `There is a problem with the questions or the set. Error: ${error.message}`,
+      duration: 5000,
+      newWindow: true,
+      close: true,
+      gravity: "top", // `top` or `bottom`
+      position: "right", // `left`, `center` or `right`
+      stopOnFocus: true,
+      // Prevents dismissing of toast on hover
+      style: {
+        background: "linear-gradient(to right, #C80036, #FF0000)",
+      },
+      onClick: function () {}, // Callback after click
+    }).showToast();
+
+    console.error("Error:", error);
+  }
+}
+
+async function questionsToSet(setId, data, QuestionsAPI) {
+  try {
+    let headers;
+    if (data[0] instanceof FormData) {
+      headers = {
+        "Content-Type": "multipart/form-data",
+      };
+    } else {
+      headers = {
+        "Content-Type": "application/json",
+      };
+    }
+
+    const res = await axios.post(
+      window.location.origin + QuestionsAPI,
+      ele,
+      headers
+    );
+  } catch (error) {}
+}
