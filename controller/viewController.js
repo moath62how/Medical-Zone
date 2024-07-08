@@ -99,7 +99,10 @@ exports.getChoice = (choices) => {
  */
 exports.getQuizInfo = async (req, res, next) => {
   const id = req.params.id;
-  res.status(200).render("quizInfo", { id });
+  const data = await Set.findById(req.params.id);
+  if (data.format != "MCQ")
+    res.status(200).render("quizInfo", { id, title: data.name });
+  else res.status(200).redirect(id + "/start/");
 };
 
 exports.typeExists = async (req, res, next) => {
@@ -139,8 +142,10 @@ exports.typeExists = async (req, res, next) => {
  */
 exports.getQuizStart = async (req, res, next) => {
   const id = req.params.id;
-
-  res.status(200).render("quiz", { id });
+  const data = await Set.findById(req.params.id);
+  if (data.format != "MCQ")
+    res.status(200).render("quiz", { id, title: data.name });
+  else res.status(200).render("mcq", { id, title: data.name });
 };
 
 exports.getLogin = async (req, res, next) => {
@@ -153,4 +158,26 @@ exports.getDashboard = async (req, res, next) => {
 
 exports.getCreateSetPage = (req, res, next) => {
   res.status(200).render("createSet");
+};
+
+exports.getPrevious = async (req, res, next) => {
+  //{ eduMod: 'Renal', faculty: 'FOMSCU' }
+  const { eduMod, faculty } = req.params;
+  const matches = req.path
+    .match(/\/([^\/]*)/g)
+    .map((match) => match.replace(/\//g, ""));
+  const type = matches[2];
+  const tags = [matches[4], matches[3]];
+  const format = type === "Lab" ? "MEQ" : "MCQ";
+
+  var data = await Set.find(
+    {
+      tags: { $all: tags },
+      format,
+    },
+    "name"
+  );
+  data = data.map((e) => e.name);
+  // res.status(200).json(data);
+  res.status(200).render("choiceBtn", { choices: data, title: "Wow" });
 };

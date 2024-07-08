@@ -5,6 +5,11 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: [true, "A questions Must have an text"],
   },
+  type: {
+    type: String,
+    enum: ["MCQ", "MEQ"],
+    required: true,
+  },
   tags: {
     type: [String],
   },
@@ -24,6 +29,10 @@ const questionSchema = new mongoose.Schema({
   image: {
     type: String,
     required: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 

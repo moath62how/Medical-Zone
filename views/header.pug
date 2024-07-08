@@ -13,25 +13,22 @@ html(lang="en")
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
   body
+    #bg
+    
     header
-      nav
-        ul.nav-bar
-          li.logo
-            a(href="/")
-              img(src="/imgs/logo.svg" alt="logo")
-          input(type="checkbox" id="check")
-          span.menu
-            li: a(href="/home") Home
-            li: a(href="") Products
-            li: a(href="") Services
-            li: a(href="") About
-            li: a(href="") Contact
-            label.close-menu(for="check")
-                i.bi.bi-x
-          label.open-menu(for="check")
-              i.bi.bi-list
+      nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        .container-fluid
+          a.navbar-brand(href='/')
+            img(src='/imgs/logo.svg', alt='Logo', width='30', height='24')
+          a.navbar-brand(href='/') Medical Zone
+          button.navbar-toggler(type='button', data-bs-toggle='collapse', data-bs-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+            span.navbar-toggler-icon
+          #navbarSupportedContent.collapse.navbar-collapse
+            a(href='/login').btn.btn-outline-primary.me-1 Login
+            a(href='/Register').btn.btn-outline-primary Register
+
     block content
-  block footer
+    block footer
     footer
     
   script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js")

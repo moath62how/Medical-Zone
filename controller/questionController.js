@@ -14,37 +14,45 @@ exports.getAllQuestions = async (req, res, next) => {
 
 exports.createQuestion = async (req, res, next) => {
   try {
-    if (req.body.image) {
-      req.body.image = req.file.filename || null;
-    }
-    if (JSON.stringify(req.body) === "{}") {
-      res.status(400).json({
+    let file = { ...req.body };
+
+    file.image = req.imgData.downloadURL;
+
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).json({
         status: "Bad request",
         message: "You must provide data to create a new question",
       });
-      return;
     }
 
-    req.body.sub_question = req.body.sub_question.split(",");
-    req.body.c_answer = req.body.c_answer.split(",");
-    req.body.tags = req.body.tags.split(",");
-    req.body.answers = req.body.answers.split(",");
+    if (file.sub_question) {
+      file.sub_question = file.sub_question.split(",");
+    }
 
-    file = {
-      ...req.body,
-      image: req.imgData.downloadURL,
-    };
-    data = await Question.create(file);
+    if (file.c_answer && file.type === "MEQ") {
+      file.c_answer = file.c_answer.split(",");
+    }
+
+    if (file.tags) {
+      file.tags = file.tags.split(",");
+    }
+
+    if (file.answers && file.type === "MEQ") {
+      file.answers = file.answers.split(",");
+    }
+    console.log(file);
+    const data = await Question.create(file);
+    res.status(200).json({
+      status: "success",
+      data,
+    });
+
+    next();
   } catch (err) {
-    return res.status(400).json({
+    console.error("Error creating question:", err);
+    res.status(400).json({
       status: "Bad request",
-      message: err,
+      message: "Failed to create question. Please try again later.",
     });
   }
-  res.json({
-    status: "success",
-    data,
-  });
-
-  next();
 };

@@ -1,13 +1,23 @@
 const setsAPI = "/api/v1/sets/";
-const QuestionsAPI = "/api/v1/question/";
+const QuestionsAPI = "/api/v1/questions/";
 
 document.addEventListener("DOMContentLoaded", function () {
   var questionCounter = 0;
   var questionType;
+
   document.getElementById("addQ").addEventListener("click", function () {
-    questionType = document.querySelector(
-      'input[name="MCQ_MEQ"]:checked'
-    ).value;
+    if (document.querySelector('input[name="MCQ_MEQ"]:checked')) {
+      questionType = document.querySelector(
+        'input[name="MCQ_MEQ"]:checked'
+      ).value;
+    } else {
+      showToastifyNotification(
+        "Choose the format of the questions",
+        3000,
+        "failure"
+      );
+    }
+
     if (questionType === "MCQ") {
       //* Handles MCQ question type
 
@@ -32,6 +42,10 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <input id="w_answer2_${questionNumber}" class="form-control mr-2 w-25" type="text" placeholder="Kidney" aria-label="Answer 2">
                                 <input id="w_answer3_${questionNumber}" class="form-control w-25" type="text" placeholder="Lung" aria-label="Answer 3">
                             </div>
+                        </div>
+                        <div class="mb-3 w-50">
+                            <label for="Q_tags_${questionNumber}" class="form-label">Enter the questions' tags (Separate each tag with a comma):</label>
+                            <textarea id="Q_tags_${questionNumber}" class="form-control form-control-sm" placeholder="Anatomy,Pharmacology,Pathology,......."></textarea>
                         </div>
                     </div>
                 `;
@@ -75,8 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .insertAdjacentHTML("beforeend", questionHtml);
 
       // alert("MEQ questions are not implemented yet.");
-    } else {
-      alert("Please select a question type.");
     }
   });
 
@@ -100,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var w_answer1 = document.getElementById(`w_answer1_${i}`).value.trim();
         var w_answer2 = document.getElementById(`w_answer2_${i}`).value.trim();
         var w_answer3 = document.getElementById(`w_answer3_${i}`).value.trim();
-
+        var tags = document.getElementById(`Q_tags_${i}`).value.split(",");
         // Check if any field is empty
         if (
           Q_text === "" ||
@@ -116,7 +128,9 @@ document.addEventListener("DOMContentLoaded", function () {
           let obj = {
             question: Q_text,
             c_answer: [C_answer],
-            answer: [w_answer1, w_answer2, w_answer3],
+            type: "MCQ",
+            answers: [w_answer1, w_answer2, w_answer3],
+            tags: tags.map((e) => e.trim()),
           };
           questionData.push(obj);
         }
@@ -143,10 +157,6 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           const formData = new FormData();
 
-          formData.set(
-            "Q_image",
-            document.getElementById(`Q_image_${i}`).files[0]
-          );
           //! remember to throw and error if they arent equal in size
           Q_subQuestions = Q_subQuestions.split(",");
           Q_subAnswers = Q_subAnswers.split(",");
@@ -161,8 +171,10 @@ document.addEventListener("DOMContentLoaded", function () {
           const obj = {
             question: Q_header,
             c_answer: Q_subAnswers,
+            type: "MEQ",
             sub_question: Q_subQuestions,
-            tags: Q_tags.split(","),
+            tags: Q_tags.split(",").map((e) => e.trim()),
+            Q_image: document.getElementById(`Q_image_${i}`).files[0],
           };
 
           for (const [key, value] of Object.entries(obj)) {
@@ -186,42 +198,81 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (allFieldsFilled && questionCounter != 0) {
-      Toastify({
-        text: "All fields contain data. Sending data...",
-        duration: 3000, // Duration in milliseconds
-        close: true,
-        gravity: "top", // `top` or `bottom`
-        position: "right", // `left`, `center` or `right`
-        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)", // Green color gradient
-        onClick: function () {}, // Callback after click
-      }).showToast();
+      showToastifyNotification(
+        "All fields contain data. Sending data...",
+        3000,
+        "info"
+      );
 
       const obj = {
-        name: document.getElementById("setName").value,
-        tags: document.getElementById("SetTags").value.split(","),
-        type: document.getElementById("inlineFormSelectPref").value,
+        name: document.getElementById("setName").value.trim(),
+        tags: document.getElementById("SetTags").value.trim().split(","),
+        type: document.getElementById("inlineFormSelectPref").value.trim(),
         format: questionType,
-        educationalModule: document.getElementById("modName").value,
+        educationalModule: document.getElementById("modName").value.trim(),
       };
 
-      let setId;
+      async function createAndUpdateSet(
+        obj,
+        setsAPI,
+        questionData,
+        QuestionsAPI
+      ) {
+        try {
+          // Step 1: Create the set
+          let res = await createSet(obj, setsAPI);
+          let setId = res.data.data._id;
 
-      createSet(obj, setsAPI).then((res) => {
-        setId = res.data.data._id;
-      });
+          // Step 2: Add questions to the set
+          let questionResponses = await questionsToSet(
+            questionData,
+            QuestionsAPI
+          );
+          let questionsId = questionResponses
+            .map((val) => {
+              if (val.status !== "rejected") {
+                return val.value.data.data._id;
+              }
+            })
+            .filter((id) => id !== undefined); // Filter out undefined values if any
 
-      // Add your code here to send the data
+          // Step 3: Update the set with question IDs
+          await axios.patch(window.location.origin + setsAPI + "/" + setId, {
+            questions: questionsId,
+          });
+
+          // Step 4: Show success notification
+          showToastifyNotification(
+            "Set was succesfuly uploaded",
+            2000,
+            "Success"
+          );
+
+          // Step 5: Copy the link to clipboard
+          copyToClipboard(window.location.origin + "/" + setId + "/" + "start");
+        } catch (err) {
+          // Error handling
+          showToastifyNotification(
+            "Oops something went wrong, contact the admin",
+            2000,
+            "failure"
+          );
+        }
+      }
+
+      createAndUpdateSet(obj, setsAPI, questionData, QuestionsAPI)
+        .then(() => {
+          console.log("After async call");
+        })
+        .catch((err) => {
+          console.error("Error during async call:", err);
+        });
     } else {
-      Toastify({
-        text: "Please fill in all fields before sending data. There are problems with the questions or the set.",
-        duration: 5000, // Duration in milliseconds
-        close: true,
-        gravity: "top", // `top` or `bottom`
-        position: "right", // `left`, `center` or `right`
-        backgroundColor: "#C80036", // Red background color
-        className: "toast-error", // Optional additional class for styling
-        onClick: function () {}, // Callback after click
-      }).showToast();
+      showToastifyNotification(
+        "Please fill in all fields before sending data. There are problems with the questions or the set.",
+        5000,
+        "info"
+      );
     }
   });
 });
@@ -232,28 +283,30 @@ async function createSet(data, setsAPI) {
     return res;
   } catch (error) {
     // Create a new Popup instance
-    Toastify({
-      text: `There is a problem with the questions or the set. Error: ${error.message}`,
-      duration: 5000,
-      newWindow: true,
-      close: true,
-      gravity: "top", // `top` or `bottom`
-      position: "right", // `left`, `center` or `right`
-      stopOnFocus: true,
-      // Prevents dismissing of toast on hover
-      style: {
-        background: "linear-gradient(to right, #C80036, #FF0000)",
-      },
-      onClick: function () {}, // Callback after click
-    }).showToast();
+
+    showToastifyNotification(
+      `There is a problem with the questions or the set. Error: ${error.message}`,
+      7000,
+      "failure"
+    );
 
     console.error("Error:", error);
   }
 }
 
-async function questionsToSet(setId, data, QuestionsAPI) {
+/**
+ * Sends a set of questions to a specified API endpoint.
+ *
+ * @param {Array<string|FormData>} data - An array of data objects or FormData to be sent.
+ * @param {string} QuestionsAPI - The API endpoint to which the questions will be sent.
+ * @returns {Promise} A promise that resolves when all POST requests are settled.
+ */
+
+async function questionsToSet(data, QuestionsAPI) {
   try {
+    let promises = [];
     let headers;
+
     if (data[0] instanceof FormData) {
       headers = {
         "Content-Type": "multipart/form-data",
@@ -264,10 +317,78 @@ async function questionsToSet(setId, data, QuestionsAPI) {
       };
     }
 
-    const res = await axios.post(
-      window.location.origin + QuestionsAPI,
-      ele,
-      headers
+    data.forEach((ele) => {
+      const res = axios.post(
+        window.location.origin + QuestionsAPI,
+        ele,
+        headers
+      );
+      promises.push(res);
+    });
+    return Promise.allSettled(promises);
+  } catch (error) {
+    console.error(error);
+    showToastifyNotification(
+      "An error occurred while submitting the questions.",
+      4000,
+      "failure"
     );
-  } catch (error) {}
+  }
+}
+
+/**
+ * Show a Toastify notification with customizable options.
+ *
+ * @param {string} text - The text content of the notification.
+ * @param {number} duration - Duration of the notification in milliseconds.
+ * @param {string} type - Type of notification ('success', 'failure', 'info').
+ */
+function showToastifyNotification(text, duration = 5000, type) {
+  let backgroundColor, textColor;
+  switch (type) {
+    case "success":
+      backgroundColor = "#5cb85c"; // Green for success
+      textColor = "text-white";
+      break;
+    case "failure":
+      backgroundColor = "#d9534f"; // Red for failure
+      textColor = "text-white";
+      break;
+    case "info":
+      backgroundColor = "#5bc0de"; // Blue for info
+      textColor = "text-white";
+      break;
+    default:
+      backgroundColor = "#d9534f"; // Default to red for any unknown type
+      textColor = "text-white";
+      break;
+  }
+
+  Toastify({
+    text: text,
+    duration: duration,
+    close: true,
+    gravity: "top", // `top` or `bottom`
+    position: "right", // `left`, `center` or `right`
+    style: {
+      background: backgroundColor,
+    },
+    className: `toast-${type} ${textColor}`, // Additional classes for styling
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+// Function to copy text to the clipboard using the Clipboard API
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    // Notify the user that the text has been copied
+    showToastifyNotification(
+      "Copiedd to clipboard successfully",
+      3000,
+      "success"
+    );
+  } catch (err) {
+    console.error("Failed to copy: ", err);
+  }
 }

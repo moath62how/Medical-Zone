@@ -31,6 +31,10 @@ const setSchema = new mongoose.Schema({
     required: true,
     enum: ["MCQ", "MEQ"],
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Sets = mongoose.model("Sets", setSchema);

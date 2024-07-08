@@ -4,19 +4,25 @@
   padding: 0;
   font-family: "Inter", sans-serif !important;
   font-weight: 600;
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
 }
 body {
   font-family: "Poppins", sans-serif;
   --color1: #fff;
   --color2: #181818;
-  background-image: url(../imgs/background.jpg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
-.nav-bar {
+#bg {
+  z-index: -1;
+  background: url("../imgs/background.jpg");
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+}
+
+/* .nav-bar {
   width: 100%;
   display: flex;
   align-items: center;
@@ -110,8 +116,8 @@ body {
   .container {
     margin: 10px;
     padding: 0;
-  }
-}
+  } 
+}*/
 .card {
   text-decoration: none;
   transition: all 0.2s;
@@ -177,11 +183,12 @@ input[type="radio"] {
 /* Style the label to look like a button */
 label.btn-radio {
   display: inline-block;
-  padding: 9px 90px;
+  padding: 9px 34px 9px 2px;
   margin: 5px;
   border: 2px solid #007bff;
-  border-radius: 5px;
+  border-radius: 50px;
   background-color: #007bff;
+  font-size: x-small;
   color: white;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
@@ -196,4 +203,46 @@ input[type="radio"]:checked + label.btn-radio {
 .horizontal-scroll {
   overflow-x: auto; /* Enable horizontal scrolling */
   white-space: nowrap; /* Prevent wrapping of child elements */
+}
+#question {
+  width: 75%;
+}
+@media (max-width: 768px) {
+  #question {
+    font-size: small;
+    width: 90%;
+  }
+  label.btn-radio {
+    display: inline-block;
+    padding: 6px 30px 6px 4px;
+    margin: 5px;
+    border: 2px solid #007bff;
+    background-color: #007bff;
+    font-size: 9pt;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+}
+.answers::before {
+  content: counter(answer-counter, upper-alpha) "- "; /* Use counter function for A, B, C, D */
+  padding-left: 10px;
+  counter-increment: answer-counter; /* Increment counter for each element */
+}
+.answer-container {
+  counter-reset: answer-counter; /* Initialize the counter */
+}
+/* Hide the default checkbox */
+#show-hide-icon {
+  display: none;
+}
+
+/* Style the label to display the icon */
+#show-hide-icon + label {
+  cursor: pointer;
+}
+
+/* Change icon when checkbox is checked */
+#show-hide-icon:checked + label {
+  content: "\f070"; /* Unicode for another icon if needed, or same icon */
 }

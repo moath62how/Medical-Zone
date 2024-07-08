@@ -13,6 +13,10 @@ const EduModSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Set",
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const EduMod = mongoose.model("EduMod", EduModSchema);

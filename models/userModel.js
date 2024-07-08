@@ -28,6 +28,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["admin", "student"],
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  passwordChangedAt: {
+    type: Date,
+  },
 });
 
 userSchema.pre("save", async function (next) {

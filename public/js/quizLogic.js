@@ -22,7 +22,7 @@ const id = document.querySelector("head").dataset.id;
 //The api URL that will be called
 const URL = "/api/v1/sets/" + id;
 
-window.addEventListener("load", async () => {
+window.addEventListener("DOMContentLoaded", async () => {
   const body = document.querySelector("#q_body");
   const checkbox = document.querySelector("#hideAnswer");
   const question = document.querySelector("#questionText");
@@ -48,10 +48,10 @@ window.addEventListener("load", async () => {
     const bckBtn = document.querySelector("#back_btn");
 
     nxtBtn.addEventListener("click", () => {
-      if (indexQuestion < 19) {
+      if (indexQuestion < response.data.questions.length - 1) {
         indexQuestion++;
         updateQuestion(indexQuestion, response.data.questions);
-      } else if (indexQuestion == 19) {
+      } else if (indexQuestion == response.data.questions.length - 1) {
         //Add what will hapen when the user reaches the end of the question set.
         console.log("There is no more question");
       }
