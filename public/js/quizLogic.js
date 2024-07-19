@@ -1,26 +1,13 @@
-var indexQuestion = 0;
+import { showToastifyNotification } from "./modules/appHelpers.mjs";
 
-async function getData(URL) {
-  try {
-    const response = await axios.get(URL);
-    // Check for successful response (status code 200)
-    if (response.status !== 200) {
-      throw new Error(`Error fetching data: ${response.statusText}`);
-    }
-    const data = response.data;
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    // Handle the error appropriately (e.g., display an error message, retry)
-  }
-}
+var indexQuestion = 0;
 
 // This is used to get the io if the Question set
 
 const id = document.querySelector("head").dataset.id;
 
 //The api URL that will be called
-const URL = "/api/v1/sets/" + id;
+const setAPIUrl = "/api/v1/sets/" + id;
 
 window.addEventListener("DOMContentLoaded", async () => {
   const body = document.querySelector("#q_body");
@@ -34,14 +21,14 @@ window.addEventListener("DOMContentLoaded", async () => {
   toggelBtn.addEventListener("click", () => {
     const answers = document.querySelectorAll(".answer");
 
-    toggelBtn.classList.toggle("bi-eye");
-    toggelBtn.classList.toggle("bi-eye-slash");
+    // toggelBtn.classList.toggle("bi-eye");
+    // toggelBtn.classList.toggle("bi-eye-slash");
 
     answers.forEach((e) => e.classList.toggle("hidden"));
   });
 
   (async () => {
-    const response = await getData(URL);
+    const response = await getData(setAPIUrl);
     document.title = response.data.name;
     updateQuestion(0, response.data.questions);
     const nxtBtn = document.querySelector("#next_btn");
@@ -62,7 +49,11 @@ window.addEventListener("DOMContentLoaded", async () => {
         indexQuestion--;
         updateQuestion(indexQuestion, response.data.questions);
       } else {
-        window.alert("There is no Question befor that.");
+        showToastifyNotification(
+          "There is no Question before that.",
+          10000,
+          "failure"
+        );
       }
     });
   })();
@@ -74,28 +65,45 @@ window.addEventListener("DOMContentLoaded", async () => {
    */
 
   const updateQuestion = function (i, questions) {
+    // Clear previous content
     body.innerHTML = "";
-    // this was used to check when are the images being rendered
-    //// img.onload = () => {
-    ////   console.log("loaded");
-    //// };
+
+    // Hide image and show loader
+    img.style.display = "none";
+    loaderContainer.classList.remove("d-none");
+
+    // Load image asynchronously
     if (questions[i].image) {
-      img.style.display = "block";
       img.setAttribute("src", questions[i].image);
+      img.onload = function () {
+        // Image loaded, show it and hide loader
+        img.style.display = "block";
+        loaderContainer.classList.add("d-none");
+      };
+      img.onerror = function () {
+        // Handle image loading error
+
+        console.error("Error loading image:", questions[i].image);
+        img.style.display = "none";
+        loaderContainer.classList.add("d-none");
+      };
     } else {
+      // No image, hide loader
       img.style.display = "none";
+      loaderContainer.classList.add("d-none");
     }
 
+    // Set question text
     question.innerText = questions[i].question;
     if (questions[i].question.length > 30) {
       question.classList.add("fs-5");
-    } else {
     }
+
+    // Add sub-questions and answers
     for (let j = 0; j < questions[i].sub_question.length; j++) {
       const sub_q = document.createElement("span");
       const ans = document.createElement("span");
-      ans.classList.add("answer");
-      ans.classList.add("hidden");
+      ans.classList.add("answer", "hidden");
       sub_q.classList.add("fs-2");
       sub_q.innerText = "- " + questions[i].sub_question[j];
       ans.innerText = "(" + questions[i].c_answer[j] + ")";

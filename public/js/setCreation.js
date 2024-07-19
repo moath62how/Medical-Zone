@@ -1,3 +1,8 @@
+import {
+  showToastifyNotification,
+  copyToClipboard,
+} from "./modules/appHelpers.mjs";
+
 const setsAPI = "/api/v1/sets/";
 const QuestionsAPI = "/api/v1/questions/";
 
@@ -157,7 +162,6 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           const formData = new FormData();
 
-          //! remember to throw and error if they arent equal in size
           Q_subQuestions = Q_subQuestions.split(",");
           Q_subAnswers = Q_subAnswers.split(",");
 
@@ -333,62 +337,5 @@ async function questionsToSet(data, QuestionsAPI) {
       4000,
       "failure"
     );
-  }
-}
-
-/**
- * Show a Toastify notification with customizable options.
- *
- * @param {string} text - The text content of the notification.
- * @param {number} duration - Duration of the notification in milliseconds.
- * @param {string} type - Type of notification ('success', 'failure', 'info').
- */
-function showToastifyNotification(text, duration = 5000, type) {
-  let backgroundColor, textColor;
-  switch (type) {
-    case "success":
-      backgroundColor = "#5cb85c"; // Green for success
-      textColor = "text-white";
-      break;
-    case "failure":
-      backgroundColor = "#d9534f"; // Red for failure
-      textColor = "text-white";
-      break;
-    case "info":
-      backgroundColor = "#5bc0de"; // Blue for info
-      textColor = "text-white";
-      break;
-    default:
-      backgroundColor = "#d9534f"; // Default to red for any unknown type
-      textColor = "text-white";
-      break;
-  }
-
-  Toastify({
-    text: text,
-    duration: duration,
-    close: true,
-    gravity: "top", // `top` or `bottom`
-    position: "right", // `left`, `center` or `right`
-    style: {
-      background: backgroundColor,
-    },
-    className: `toast-${type} ${textColor}`, // Additional classes for styling
-    onClick: function () {}, // Callback after click
-  }).showToast();
-}
-
-// Function to copy text to the clipboard using the Clipboard API
-async function copyToClipboard(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    // Notify the user that the text has been copied
-    showToastifyNotification(
-      "Copiedd to clipboard successfully",
-      3000,
-      "success"
-    );
-  } catch (err) {
-    console.error("Failed to copy: ", err);
   }
 }

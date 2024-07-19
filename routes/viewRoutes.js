@@ -49,6 +49,11 @@ router.get(
 
 router.get("/:eduMod/:faculty/labs/OSPE/Previous", viewController.getPrevious);
 
+router.get("/:eduMod/:faculty/labs/OSPE/Previous/:id", (req, res, next) => {
+  console.log("/" + req.params.id);
+  res.redirect("/" + req.params.id);
+});
+
 // Uncommented Legacy or Unfinished Routes
 // router.get("/:eduMod/:faculty/Questions/OSPE/:");
 // router.get(

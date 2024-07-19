@@ -3,4 +3,4 @@ extends header.pug
 block content
     .container.d-flex.flex-column.justify-content-center.align-items-center
         each choice in choices 
-            a.btn.rounded-5.mt-5.pt-2(href=`./${choice}/`) #{choice}
+            a.btn.rounded-5.mt-5.pt-2(href=`./${choice.link}/`) #{choice.text}

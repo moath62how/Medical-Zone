@@ -62,15 +62,28 @@ exports.getHome = async (req, res, next) => {
  *   rendering of the choices and title.
  * - Assumes the presence of an `extractWords` function that processes the title.
  */
-exports.getChoice = (choices) => {
+exports.getChoice = (initialChoices) => {
   return (req, res, next) => {
-    if (choices.length == 0) {
-      choices == req.arr;
+    let choices = initialChoices;
+
+    if (!choices || choices.length === 0) {
+      choices = req.arr;
     }
-    var title = req.path.charAt(0).toUpperCase() + req.path.slice(1);
+
+    let title = req.path.charAt(0).toUpperCase() + req.path.slice(1);
     title = title.substring(1, title.length - 1);
+
     const arr = extractWords(title);
-    res.render("choiceBtn", { choices, title: arr[arr.length - 1] });
+
+    const formattedChoices = choices.map((doc) => ({
+      text: doc,
+      link: doc,
+    }));
+
+    res.render("choiceBtn", {
+      choices: formattedChoices,
+      title: arr[arr.length - 1],
+    });
   };
 };
 
@@ -98,11 +111,18 @@ exports.getChoice = (choices) => {
  * // The function will render the 'quizInfo' view with the quiz ID '5f8d0d55b54764421b7156c3'
  */
 exports.getQuizInfo = async (req, res, next) => {
-  const id = req.params.id;
-  const data = await Set.findById(req.params.id);
-  if (data.format != "MCQ")
-    res.status(200).render("quizInfo", { id, title: data.name });
-  else res.status(200).redirect(id + "/start/");
+  try {
+    const id = req.params.id;
+    const data = await Set.findById(req.params.id);
+    console.log(data.format);
+    if (data.format != "MCQ") {
+      res.status(200).render("quizInfo", { id, title: data.name });
+    } else {
+      res.status(200).redirect(id + "/start/");
+    }
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 exports.typeExists = async (req, res, next) => {
@@ -141,11 +161,14 @@ exports.typeExists = async (req, res, next) => {
  * // The function will render the 'quiz' view with the quiz ID '5f8d0d55b54764421b7156c3'
  */
 exports.getQuizStart = async (req, res, next) => {
-  const id = req.params.id;
-  const data = await Set.findById(req.params.id);
+  const { id } = req.params;
+  const data = await Set.findById(req.params.id).populate("questions");
   if (data.format != "MCQ")
     res.status(200).render("quiz", { id, title: data.name });
-  else res.status(200).render("mcq", { id, title: data.name });
+  else
+    res
+      .status(200)
+      .render("mcq", { id: JSON.stringify(data), title: data.name });
 };
 
 exports.getLogin = async (req, res, next) => {
@@ -168,16 +191,17 @@ exports.getPrevious = async (req, res, next) => {
     .map((match) => match.replace(/\//g, ""));
   const type = matches[2];
   const tags = [matches[4], matches[3]];
-  const format = type === "Lab" ? "MEQ" : "MCQ";
-
-  var data = await Set.find(
+  const format = type === "Labs" ? "MEQ" : "MCQ";
+  const data = await Set.find(
     {
       tags: { $all: tags },
       format,
     },
-    "name"
+    "_id name"
   );
-  data = data.map((e) => e.name);
-  // res.status(200).json(data);
-  res.status(200).render("choiceBtn", { choices: data, title: "Wow" });
+  const choices = data.map((doc) => ({
+    text: doc.name,
+    link: doc._id,
+  }));
+  res.status(200).render("choiceBtn", { choices, title: "Wow" });
 };
