@@ -1,12 +1,12 @@
 {
-  "name": "Medical_zone",
+  "name": "MedicalZone",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon app.js NODE_ENV=development",
-    "start:prod": "nodemon app.js NODE_ENV=production"
+    "start": "set NODE_ENV=development&& nodemon app.js",
+    "start:prod": "set NODE_ENV=production&&nodemon app.js"
   },
   "author": "Moath hussan",
   "license": "ISC",

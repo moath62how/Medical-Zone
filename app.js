@@ -28,8 +28,10 @@ app.use(
         imgSrc: ["'self'", "data:", "https://firebasestorage.googleapis.com"],
       },
     },
-  }),
+  })
 );
+
+console.log(os.cpus().length);
 
 // Enable CORS
 app.use(cors());
@@ -50,7 +52,7 @@ app.use("/api", limiter);
 
 // Connect to MongoDB
 mongoose.connect(
-  process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD),
+  process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD)
 );
 
 const db = mongoose.connection;
