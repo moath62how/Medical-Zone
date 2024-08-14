@@ -1,4 +1,9 @@
-import { shuffle } from "./modules/appHelpers.mjs";
+import {
+  shuffle,
+  showToastifyNotification,
+  ModalDialog,
+  calculateOccurrencePercentage,
+} from "./modules/appHelpers.mjs";
 
 var indexQuestion = 0;
 window.addEventListener("DOMContentLoaded", () => {
@@ -8,58 +13,124 @@ window.addEventListener("DOMContentLoaded", () => {
   headElement.setAttribute("data-id", "");
 
   /**
-   * @typedef {'skipped' | 'answered' | 'revealed' | undefined} QuestionStatus
-   */
-
-  /**
-   * An array representing the status of each question in the quiz.
-   * Each element can have one of the following values:
-   * - 'skipped': The question was skipped.
-   * - 'answered': The question was answered.
-   * - 'revealed': The answer to the question that's answerd was revealed.
-   * - undefined: The question has not been answered.
+   * @typedef {'unanswered' | 'revealed' | string } questionStatuses
    *
-   * @type {QuestionStatus[]}
+   * Represents the status of a question in the quiz.
+   * Each element in the array can have one of the following values:
+   * - 'unanswered': The question has not been answered.
+   * - 'revealed': The answer to the question was revealed.
+   * - any string: Represents an answered question with a specific answer.
+   *
+   * @type {questionStatuses[]}
    */
-
-  const questionStatuses = new Array(data.length);
+  const questionStatuses = new Array(data.length).fill("unanswered");
 
   const nxtBtn = document.querySelector("#next_btn");
   const bckBtn = document.querySelector("#back_btn");
+  const toggelBtn = document.getElementById("show-hide-icon");
 
   removeLoaders();
   updateQuestion(0, data);
 
   nxtBtn.addEventListener("click", () => {
+    //Check what answer was selected
+    document.querySelectorAll(`[name="Answer"]`).forEach((e) => {
+      if (e.checked && questionStatuses[indexQuestion] != "revealed")
+        questionStatuses[indexQuestion] = e.nextSibling.innerText;
+      e.checked = false;
+    });
+
     if (indexQuestion < data.length - 1) {
       indexQuestion++;
       updateQuestion(indexQuestion, data);
-      checkStatus();
+
+      toggelBtn.checked = false;
+      fireEvent(toggelBtn, "change");
+
+      checkQuestionStatus(questionStatuses, indexQuestion, toggelBtn);
     } else if (indexQuestion == data.length - 1) {
-      //Add what will hapen when the user reaches the end of the question set.
-      showToastifyNotification("yes");
+      console.log(questionStatuses);
+
+      const percentageOfUnanswerd = calculateOccurrencePercentage(
+        questionStatuses,
+        "unanswered"
+      );
+      const percentageOfRevealed = calculateOccurrencePercentage(
+        questionStatuses,
+        "revealed"
+      );
+      const percentageOfAnswerd =
+        100 - (percentageOfUnanswerd + percentageOfRevealed);
+
+      const percentageOfAnswerdCorrectly =
+        (questionStatuses.filter((e, i) => {
+          return e == data[i].c_answer;
+        }).length /
+          questionStatuses.length) *
+        100;
+      const percentageOfAnswerdWrong =
+        percentageOfAnswerd - percentageOfAnswerdCorrectly;
+
+      const progressBar = `<div class="progress-stacked" style="max-width: 90%;height:fit-content;">
+            <div data-bs-toggle="tooltip" data-bs-title="Unanswerd"  class="progress-bar fs-6"
+                style="min-width: ${percentageOfUnanswerd}%"> ${percentageOfUnanswerd.toFixed(1)}%
+            </div>
+            <div data-bs-toggle="tooltip"  data-bs-title="Correct" class="progress-bar bg-success fs-6"
+                style="min-width: ${percentageOfAnswerdCorrectly}%"> ${percentageOfAnswerdCorrectly.toFixed(1)}%
+            </div>
+            <div  data-bs-toggle="tooltip" data-bs-title="Wrong" class="progress-bar bg-danger 
+                progress-bar-stripped fs-6" style="min-width: ${percentageOfAnswerdWrong}%"> ${percentageOfAnswerdWrong.toFixed(1)}%
+            </div>
+            <div data-bs-toggle="tooltip" data-bs-title="Revealed" class="progress-bar bg-warning 
+                progress-bar-stripped fs-6" style="min-width: ${percentageOfRevealed}%">${percentageOfRevealed.toFixed(1)}%
+            </div>
+        </div>`;
+      const content = questionStatuses
+        .map((e, i) => {
+          return `<p text-center>Q${i + 1}:${data[i].question} <br> Your answer was : ${e} ${
+            e == data[i].c_answer
+              ? `<i class="bi bi-check text-success fs-3"></i>`
+              : `<i class="bi bi-x text-danger fs-3"></i>
+`
+          }  <br>the correct answer is : ${data[i].c_answer}  <p>`;
+        })
+        .join("");
+
+      const modal = new ModalDialog(
+        "modalDialog", // Modal ID
+        "Congratulation 🎊", // Title
+        progressBar + content, // Body content (HTML string)
+        "Finished and go back home ", // Primary button text
+        () => {
+          // Primary button action
+          window.location.href = "/";
+        }
+      );
+
+      modal.show();
+
+      var tooltipTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      );
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
     }
   });
 
   bckBtn.addEventListener("click", () => {
     if (indexQuestion == 0) {
-      return showToastifyNotification("There is no Question before that.");
+      return showToastifyNotification("There is no questions before that.");
     }
     enableInput(document.querySelectorAll("input[type=radio]"));
-    const answers = document.querySelectorAll(".answers");
-    answers.forEach((e) => {
-      if (data[indexQuestion].c_answer[0] == e.innerText) {
-        e.classList.remove("bg-success");
-      } else {
-        e.classList.remove("bg-danger");
-      }
-    });
-    // checkStatus();
+
+    toggelBtn.checked = false;
+    fireEvent(toggelBtn, "change");
+
     --indexQuestion;
     updateQuestion(indexQuestion, data);
+    checkQuestionStatus(questionStatuses, indexQuestion, toggelBtn);
   });
-
-  const toggelBtn = document.getElementById("show-hide-icon");
 
   toggelBtn.style.cursor = "pointer";
 
@@ -71,6 +142,7 @@ window.addEventListener("DOMContentLoaded", () => {
     checkbox.classList.toggle("bi-eye-slash");
 
     if (checkbox.checked) {
+      questionStatuses[indexQuestion] = "revealed";
       disableInput(document.querySelectorAll("input[type=radio]"));
       answers.forEach((e) => {
         if (data[indexQuestion].c_answer[0] == e.innerText) {
@@ -82,18 +154,15 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
       enableInput(document.querySelectorAll("input[type=radio]"));
       answers.forEach((e) => {
-        if (data[indexQuestion].c_answer[0] == e.innerText) {
-          e.classList.remove("bg-success");
-        } else {
-          e.classList.remove("bg-danger");
-        }
+        e.classList.remove("bg-success");
+        e.classList.remove("bg-danger");
       });
     }
   });
 
   function updateQuestion(i, arr) {
     let q_text = document.getElementById("question");
-    let answers = document.querySelectorAll(".answers");
+    let answersdiv = document.querySelectorAll(".answers");
     const counterDiv = document.createElement("div");
 
     counterDiv.style.position = "relative";
@@ -104,13 +173,13 @@ window.addEventListener("DOMContentLoaded", () => {
     q_text.innerText = arr[i].question;
     q_text.prepend(counterDiv);
 
-    answers = Array.from(answers);
-    answers = shuffle(answers);
+    const answers = shuffle([...arr[i].answers, ...arr[i].c_answer]);
 
-    for (let j = 0; j < 3; j++) {
-      answers[j].innerText = arr[i].answers[j];
+    // answers = shuffle(answers);
+
+    for (let j = 0; j < 4; j++) {
+      answersdiv[j].innerText = answers[j];
     }
-    answers[3].innerText = arr[i].c_answer;
   }
 
   function removeLoaders() {
@@ -120,6 +189,7 @@ window.addEventListener("DOMContentLoaded", () => {
     circle.remove();
   }
 });
+
 /**
  * Enables input elements by removing the 'disabled' attribute and specific classes from their next siblings.
  *
@@ -149,45 +219,28 @@ function disableInput(btn, fadded = false) {
   });
 }
 
-/**
- * Show a Toastify notification with customizable options.
- *
- * @param {string} text - The text content of the notification.
- * @param {number} duration - Duration of the notification in milliseconds.
- * @param {string} type - Type of notification ('success', 'failure', 'info').
- */
-function showToastifyNotification(text, duration = 5000, type) {
-  let backgroundColor, textColor;
-  switch (type) {
-    case "success":
-      backgroundColor = "#5cb85c"; // Green for success
-      textColor = "text-white";
+function checkQuestionStatus(
+  QuestionsStatusArray,
+  questionIndex,
+  showHideanswersBtn
+) {
+  switch (QuestionsStatusArray[questionIndex]) {
+    case "revealed":
+      showHideanswersBtn.checked = true;
+      fireEvent(showHideanswersBtn, "change");
       break;
-    case "failure":
-      backgroundColor = "#d9534f"; // Red for failure
-      textColor = "text-white";
-      break;
-    case "info":
-      backgroundColor = "#5bc0de"; // Blue for info
-      textColor = "text-white";
+    case "unanswerd":
       break;
     default:
-      backgroundColor = "#d9534f"; // Default to red for any unknown type
-      textColor = "text-white";
+      document.querySelectorAll(`[name="Answer"]`).forEach((ele) => {
+        if (ele.nextSibling.innerText == QuestionsStatusArray[questionIndex])
+          ele.checked = true;
+      });
       break;
   }
-  Toastify({
-    text: text,
-    duration: duration,
-    close: true,
-    gravity: "top", // `top` or `bottom`
-    position: "right", // `left`, `center` or `right`
-    style: {
-      background: backgroundColor,
-    },
-    className: `toast-${type} ${textColor}`, // Additional classes for styling
-    onClick: function () {}, // Callback after click
-  }).showToast();
 }
 
-function checkStatus(data, arr, i) {}
+function fireEvent(element, eventName) {
+  const event = new Event(eventName, { bubbles: true });
+  element.dispatchEvent(event);
+}

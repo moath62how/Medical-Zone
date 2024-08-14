@@ -1,4 +1,4 @@
-require("dotenv").config({ path: __dirname + "/config.env" });
+require("dotenv").config({ path: `${__dirname}/config.env` });
 const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
@@ -19,16 +19,16 @@ const EduModRoutes = require("./routes/eduModRoutes");
 
 const app = express();
 
-// Set security HTTP headers
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+        imgSrc: ["'self'", "data:", "https://firebasestorage.googleapis.com"],
       },
     },
-  })
+  }),
 );
 
 // Enable CORS
@@ -45,16 +45,17 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   message: "Too many requests from this IP, please try again in an hour!",
 });
+
 app.use("/api", limiter);
 
 // Connect to MongoDB
 mongoose.connect(
-  process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD)
+  process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD),
 );
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function () {
+db.once("open", () => {
   console.log("we're connected to the DB!");
 });
 
@@ -104,7 +105,9 @@ const server = app.listen(process.env.PORT, () => {
 process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);
   console.log("UNHANDLED REJECTION❗ SHUTTING DOWN....");
-  server.close(() => process.exit(1));
+  server.close(() => {
+    return process.exit(1);
+  });
 });
 
 //TODO Move this function to a file in the script folder

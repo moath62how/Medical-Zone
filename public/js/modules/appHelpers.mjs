@@ -42,6 +42,17 @@ export function showToastifyNotification(text, duration = 5000, type) {
   }).showToast();
 }
 
+export function calculateOccurrencePercentage(array, targetElement) {
+  const count = array.filter((element) => {
+    console.log(element, ":", targetElement);
+    return element == targetElement;
+  }).length;
+  const percentage = (count / array.length) * 100;
+  console.log(percentage, count);
+
+  return percentage;
+}
+
 // Function to copy text to the clipboard using the Clipboard API
 export async function copyToClipboard(text) {
   try {
@@ -91,4 +102,63 @@ export function shuffle(array) {
   }
 
   return array;
+}
+
+export class ModalDialog {
+  constructor(
+    modalId,
+    title,
+    bodyContent,
+    primaryButtonText,
+    primaryButtonAction
+  ) {
+    // Create modal structure
+    this.modalDiv = document.createElement("div");
+    this.modalDiv.className = "modal fade";
+    this.modalDiv.id = modalId;
+    this.modalDiv.tabIndex = -1;
+    this.modalDiv.setAttribute("aria-labelledby", `${modalId}Label`);
+    this.modalDiv.setAttribute("aria-hidden", "true");
+
+    this.modalDiv.innerHTML = `
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="${modalId}Label">${title}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            ${bodyContent}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">${primaryButtonText}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Attach the modal to the body
+    document.body.appendChild(this.modalDiv);
+
+    // Add event listener for the primary button if needed
+    if (primaryButtonAction) {
+      this.modalDiv
+        .querySelector(".btn-primary")
+        .addEventListener("click", primaryButtonAction);
+    }
+
+    // Initialize Bootstrap's modal instance
+    this.bootstrapModal = new bootstrap.Modal(this.modalDiv);
+  }
+
+  show() {
+    // Use Bootstrap's modal API to show the modal
+    this.bootstrapModal.show();
+  }
+
+  hide() {
+    // Use Bootstrap's modal API to hide the modal
+    this.bootstrapModal.hide();
+  }
 }

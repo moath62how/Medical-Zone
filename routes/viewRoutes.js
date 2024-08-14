@@ -1,4 +1,5 @@
 const express = require("express");
+
 const router = express.Router();
 const viewController = require("../controller/viewController");
 
@@ -21,17 +22,17 @@ router.get("/:id([a-fA-F0-9]{24})/start", viewController.getQuizStart);
 router.get("/:eduMod", viewController.getChoice(["FOMSCU"]));
 router.get(
   "/:eduMod/:faculty",
-  viewController.getChoice(["Lectures", "Seminars", "Labs"])
+  viewController.getChoice(["Lectures", "Seminars", "Labs"]),
 );
 
 // Specific Routes for Questions
 router.get(
   "/:eduMod/:faculty/labs/",
-  viewController.getChoice(["Summary", "OSPE"])
+  viewController.getChoice(["Summary", "OSPE"]),
 );
 router.get(
   "/:eduMod/:faculty/lectures/",
-  viewController.getChoice(["Summary", "MCQ"])
+  viewController.getChoice(["Summary", "MCQ"]),
 );
 
 // Placeholder Routes
@@ -39,12 +40,12 @@ router.get(
   ["/:eduMod/:faculty/labs/Summary", "/:eduMod/:faculty/lectures/Summary"],
   (req, res) => {
     res.send("To be implemented...");
-  }
+  },
 );
 
 router.get(
   ["/:eduMod/:faculty/labs/OSPE", "/:eduMod/:faculty/lectures/MCQ"],
-  viewController.getChoice(["Previous", "Customize", "MZ Questions"])
+  viewController.getChoice(["Previous", "Customize", "MZ Questions"]),
 );
 
 router.get("/:eduMod/:faculty/labs/OSPE/Previous", viewController.getPrevious);

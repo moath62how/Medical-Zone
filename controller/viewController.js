@@ -75,10 +75,12 @@ exports.getChoice = (initialChoices) => {
 
     const arr = extractWords(title);
 
-    const formattedChoices = choices.map((doc) => ({
-      text: doc,
-      link: doc,
-    }));
+    const formattedChoices = choices.map((doc) => {
+      return {
+        text: doc,
+        link: doc,
+      };
+    });
 
     res.render("choiceBtn", {
       choices: formattedChoices,
@@ -112,13 +114,13 @@ exports.getChoice = (initialChoices) => {
  */
 exports.getQuizInfo = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
     const data = await Set.findById(req.params.id);
-    console.log(data.format);
+
     if (data.format != "MCQ") {
       res.status(200).render("quizInfo", { id, title: data.name });
     } else {
-      res.status(200).redirect(id + "/start/");
+      res.status(200).redirect(`${id}/start/`);
     }
   } catch (e) {
     console.log(e);
@@ -130,7 +132,7 @@ exports.typeExists = async (req, res, next) => {
   if (!data) {
     res.status(404).render("error", {
       status: 404,
-      message: 'There is no "' + req.params.type + '" Question sets Available',
+      message: `There is no "${req.params.type}" Question sets Available`,
     });
   } else {
     return next();
@@ -163,8 +165,9 @@ exports.typeExists = async (req, res, next) => {
 exports.getQuizStart = async (req, res, next) => {
   const { id } = req.params;
   const data = await Set.findById(req.params.id).populate("questions");
+
   if (data.format != "MCQ")
-    res.status(200).render("quiz", { id, title: data.name });
+    res.status(200).render("quiz", { id :JSON.stringify(data) , title: data.name });
   else
     res
       .status(200)
@@ -184,24 +187,26 @@ exports.getCreateSetPage = (req, res, next) => {
 };
 
 exports.getPrevious = async (req, res, next) => {
-  //{ eduMod: 'Renal', faculty: 'FOMSCU' }
   const { eduMod, faculty } = req.params;
-  const matches = req.path
-    .match(/\/([^\/]*)/g)
-    .map((match) => match.replace(/\//g, ""));
-  const type = matches[2];
-  const tags = [matches[4], matches[3]];
+  const matches = req.path.match(/\/([^\/]*)/g).map((match) => {
+    return match.replace(/\//g, "");
+  });
+  console.log(matches);
+  const [tags,type] = [[matches[4], matches[3]],matches[2]];
   const format = type === "Labs" ? "MEQ" : "MCQ";
   const data = await Set.find(
     {
       tags: { $all: tags },
       format,
+      educationalModule:eduMod,
     },
-    "_id name"
+    "_id name",
   );
-  const choices = data.map((doc) => ({
-    text: doc.name,
-    link: doc._id,
-  }));
-  res.status(200).render("choiceBtn", { choices, title: "Wow" });
+  const choices = data.map((doc) => {
+    return {
+      text: doc.name,
+      link: doc._id,
+    };
+  });
+  res.status(200).render("choiceBtn", { choices, title: matches[4]});
 };

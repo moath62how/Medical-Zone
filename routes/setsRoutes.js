@@ -1,8 +1,9 @@
-const setsController = require("../controller/setsController");
-const { uploadFirebase } = require("../controller/firebaseController");
 const express = require("express");
 const multer = require("multer");
 const sharp = require("sharp");
+const { uploadFirebase } = require("../controller/firebaseController");
+const setsController = require('../controller/setsController');
+
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });

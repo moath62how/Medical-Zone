@@ -4,6 +4,7 @@ const sharp = require("sharp");
 const path = require("path");
 const questionController = require("../controller/questionController");
 const { uploadFirebase } = require("../controller/firebaseController");
+
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -14,7 +15,7 @@ router
   .post(
     upload.single("Q_image"),
     uploadFirebase,
-    questionController.createQuestion
+    questionController.createQuestion,
   );
 
 module.exports = router;

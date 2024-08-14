@@ -1,4 +1,4 @@
-const id = document.querySelector("body").dataset.id;
+const { id } = document.querySelector('body').dataset;
 
 const url = "./api/v1/sets/" + id;
 
@@ -9,7 +9,7 @@ async function getData(u) {
     if (response.status !== 200) {
       throw new Error(`Error fetching data: ${response.statusText}`);
     }
-    const data = response.data;
+    const { data } = response;
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -23,7 +23,7 @@ async function getData(u) {
  */
 
 function countFrequency(arr) {
-  var freq = {};
+  const freq = {};
 
   arr.forEach((e) => {
     e.tags.forEach((f) => {
@@ -70,4 +70,4 @@ const startBtn = document.querySelector("#start");
 
 // console.log();
 
-startBtn.setAttribute("href", window.location.href + "/start");
+startBtn.setAttribute("href", `${window.location.href}/start`);

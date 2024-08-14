@@ -21,11 +21,11 @@ const storage = getStorage();
 
 const giveCurrentDateTime = () => {
   const today = new Date();
-  const date =
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-  const time =
-    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  const dateTime = date + " " + time;
+  const date = `${today.getFullYear()}-${
+    today.getMonth() + 1
+  }-${today.getDate()}`;
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+  const dateTime = `${date} ${time}`;
   return dateTime;
 };
 
@@ -35,7 +35,7 @@ exports.uploadFirebase = async (req, res, next) => {
 
     const storageRef = ref(
       storage,
-      `files/${req.file.originalname + "-" + dateTime}`
+      `files/${`${req.file.originalname}-${dateTime}`}`
     );
 
     // Create file metadata including the content type
@@ -54,7 +54,6 @@ exports.uploadFirebase = async (req, res, next) => {
     // Grab the public url
     const downloadURL = await getDownloadURL(snapshot.ref);
 
-    console.log("File successfully uploaded.");
     req.imgData = {
       message: "file uploaded to firebase storage",
       name: req.file.originalname,

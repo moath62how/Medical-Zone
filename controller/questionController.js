@@ -1,6 +1,6 @@
 const multer = require("multer");
 const sharp = require("sharp");
-const Question = require("./../models/questionModel");
+const Question = require('../models/questionModel');
 
 exports.getAllQuestions = async (req, res, next) => {
   const data = await Question.find();
@@ -14,7 +14,7 @@ exports.getAllQuestions = async (req, res, next) => {
 
 exports.createQuestion = async (req, res, next) => {
   try {
-    let file = { ...req.body };
+    const file = { ...req.body };
 
     file.image = req.imgData.downloadURL;
 

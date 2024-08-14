@@ -1,4 +1,4 @@
-const Sets = require("./../models/setModel");
+const Sets = require('../models/setModel');
 
 exports.createSet = async (req, res, next) => {
   try {
@@ -19,7 +19,7 @@ exports.createSet = async (req, res, next) => {
 exports.getAllSets = async (req, res, next) => {
   data = await Sets.find(req.body);
 
-  // data.populate("questions");
+ 
 
   res.status(200).json({
     status: "Success",

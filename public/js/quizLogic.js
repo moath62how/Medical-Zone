@@ -4,12 +4,12 @@ var indexQuestion = 0;
 
 // This is used to get the io if the Question set
 
-const id = document.querySelector("head").dataset.id;
+const data = JSON.parse(document.querySelector("head").dataset.id);
 
 //The api URL that will be called
-const setAPIUrl = "/api/v1/sets/" + id;
+// const setAPIUrl = "/api/v1/sets/" + id;
 
-window.addEventListener("DOMContentLoaded", async () => {
+window.addEventListener("DOMContentLoaded", () => {
   const body = document.querySelector("#q_body");
   const checkbox = document.querySelector("#hideAnswer");
   const question = document.querySelector("#questionText");
@@ -27,44 +27,56 @@ window.addEventListener("DOMContentLoaded", async () => {
     answers.forEach((e) => e.classList.toggle("hidden"));
   });
 
-  (async () => {
-    const response = await getData(setAPIUrl);
-    document.title = response.data.name;
-    updateQuestion(0, response.data.questions);
-    const nxtBtn = document.querySelector("#next_btn");
-    const bckBtn = document.querySelector("#back_btn");
+  document.title = data.name;
+  updateQuestion(0, data.questions);
+  const nxtBtn = document.querySelector("#next_btn");
+  const bckBtn = document.querySelector("#back_btn");
 
-    nxtBtn.addEventListener("click", () => {
-      if (indexQuestion < response.data.questions.length - 1) {
-        indexQuestion++;
-        updateQuestion(indexQuestion, response.data.questions);
-      } else if (indexQuestion == response.data.questions.length - 1) {
-        //Add what will hapen when the user reaches the end of the question set.
-        console.log("There is no more question");
-      }
-    });
+  nxtBtn.addEventListener("click", () => {
+    if (indexQuestion < data.questions.length - 1) {
+      indexQuestion++;
+      updateQuestion(indexQuestion, data.questions);
+    } else if (indexQuestion == data.questions.length - 1) {
+      Swal.fire({
+        title: "Good job!",
+        text: "You have completed the quiz!",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "Redo the test",
+        cancelButtonText: "Go to homepage",
+        allowOutsideClick: false, // Prevent closing by clicking outside
+        allowEscapeKey: false, // Prevent closing by pressing Escape
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Reload the page to redo the test
+          location.reload();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          // Redirect to the homepage
+          window.location.href = "/";
+        }
+      });
+    }
+  });
 
-    bckBtn.addEventListener("click", () => {
-      if (indexQuestion != 0) {
-        indexQuestion--;
-        updateQuestion(indexQuestion, response.data.questions);
-      } else {
-        showToastifyNotification(
-          "There is no Question before that.",
-          10000,
-          "failure"
-        );
-      }
-    });
-  })();
-
+  bckBtn.addEventListener("click", () => {
+    if (indexQuestion != 0) {
+      indexQuestion--;
+      updateQuestion(indexQuestion, data.questions);
+    } else {
+      showToastifyNotification(
+        "There is no Question before that.",
+        10000,
+        "failure"
+      );
+    }
+  });
   /**
    *
    * @param {Number} i - index of the question you want to render
    * @param {Array} questions -array of questions to render
    */
 
-  const updateQuestion = function (i, questions) {
+  function updateQuestion(i, questions) {
     // Clear previous content
     body.innerHTML = "";
 
@@ -110,5 +122,5 @@ window.addEventListener("DOMContentLoaded", async () => {
       body.appendChild(sub_q);
       body.appendChild(ans);
     }
-  };
+  }
 });
