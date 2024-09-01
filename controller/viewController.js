@@ -1,5 +1,7 @@
 const Set = require("../models/setModel");
 const EduMod = require("../models/EduModModel");
+const { AppError } = require("../errors/AppError");
+const { tryCatch } = require("../errors/catchAsync");
 
 /**
  * Extracts all words from a given string.
@@ -167,40 +169,47 @@ exports.getQuizStart = async (req, res, next) => {
   const data = await Set.findById(req.params.id).populate("questions");
 
   if (data.format != "MCQ")
-    res.status(200).render("quiz", { id :JSON.stringify(data) , title: data.name });
+    res
+      .status(200)
+      .render("quiz", { id: JSON.stringify(data), title: data.name });
   else
     res
       .status(200)
       .render("mcq", { id: JSON.stringify(data), title: data.name });
 };
 
-exports.getLogin = async (req, res, next) => {
+exports.getLogin = (req, res, next) => {
   res.status(200).render("login");
 };
 
-exports.getDashboard = async (req, res, next) => {
-  res.status(200).render("adminDashboard");
+exports.getDashboard = (req, res, next) => {
+  res.status(200).render("admin/adminDashboard");
 };
 
 exports.getCreateSetPage = (req, res, next) => {
-  res.status(200).render("createSet");
+  res.status(200).render("admin/createSet");
 };
 
+exports.getQuestionPage = tryCatch(async (req, res, next) => {
+  res.status(200).render("admin/viewQuestion");
+});
+
+//!this is not clean code update it
 exports.getPrevious = async (req, res, next) => {
   const { eduMod, faculty } = req.params;
   const matches = req.path.match(/\/([^\/]*)/g).map((match) => {
     return match.replace(/\//g, "");
   });
-  console.log(matches);
-  const [tags,type] = [[matches[4], matches[3]],matches[2]];
+  ////console.log(matches);
+  const [tags, type] = [[matches[4], matches[3]], matches[2]];
   const format = type === "Labs" ? "MEQ" : "MCQ";
   const data = await Set.find(
     {
       tags: { $all: tags },
       format,
-      educationalModule:eduMod,
+      educationalModule: eduMod,
     },
-    "_id name",
+    "_id name"
   );
   const choices = data.map((doc) => {
     return {
@@ -208,5 +217,5 @@ exports.getPrevious = async (req, res, next) => {
       link: doc._id,
     };
   });
-  res.status(200).render("choiceBtn", { choices, title: matches[4]});
+  res.status(200).render("choiceBtn", { choices, title: matches[4] });
 };

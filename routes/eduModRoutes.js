@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const eduModController = require("../controller/eduModController");
-const { uploadFirebase } = require("../controller/firebaseController");
+const { uploadFirebase } = require("../middleware/firebaseImgMiddelware");
 
 const router = express.Router();
 
@@ -15,5 +15,11 @@ router
     uploadFirebase,
     eduModController.createEduMod
   );
+
+router
+  .route("/:id")
+  .get(eduModController.getEdumod)
+  .patch(eduModController.findAndUpdateEduMod)
+  .delete(eduModController.deleteEduMod);
 
 module.exports = router;

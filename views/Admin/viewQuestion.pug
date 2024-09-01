@@ -1,0 +1,23 @@
+extends _header.pug
+
+block content
+    .row.row-cols-3.mx-4    
+        +questionCard()
+        +questionCard()
+        +questionCard()
+        +questionCard()
+            
+
+mixin questionCard()
+    .card.col.m-3.py-5 
+        h5.card-titleCard.fs-5 which plasmodium spp. Can produce flat trophozoites, contains ziemann’s dots and has 72h periodicity malarial paroxysms
+        h6.card-subtitle.text-body-secondary.d-flex.align-items-center Id : 564649846ad5asd54
+            .btn.btn-primary.m-2    
+                i.fas.fa-clipboard
+        .btn.btn-Danger.position-absolute.top-0.end-0.m-1 Delete 
+            i.fas.fa-trash
+        .btn.btn-primary.position-absolute.bottom-0.end-0.m-1 Edit 
+            i.fas.fa-pen 
+        p(class="card-text") Some quick example text to build on the card title and make up the bulk of the card's content.
+        
+             

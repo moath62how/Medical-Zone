@@ -1,22 +1,20 @@
-require("dotenv").config({ path: `${__dirname}/config.env` });
 const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const os = require("os");
-const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
-const csurf = require("csurf");
 const questionRoutes = require("./routes/questionRoutes");
 const setsRoutes = require("./routes/setsRoutes");
 const viewRoutes = require("./routes/viewRoutes");
+const adminViewRoutes = require("./routes/adminViewRoutes");
 const EduModRoutes = require("./routes/eduModRoutes");
+const { globalErrorHandler } = require("./errors/globalErrorHandler");
 
 const app = express();
 
@@ -32,8 +30,6 @@ app.use(
   })
 );
 
-console.log(os.cpus().length);
-
 // Enable CORS
 app.use(cors());
 
@@ -44,23 +40,12 @@ if (process.env.NODE_ENV === "development") {
 
 // Rate limiting middleware
 const limiter = rateLimit({
-  max: 100, // Limit each IP to 100 requests per window (here, per hour)
-  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 100, // Limit each IP to 100 requests per window
+  windowMs: 60 * 60 * 1000, // time is in ms
   message: "Too many requests from this IP, please try again in an hour!",
 });
 
-app.use("/api", limiter);
-
-// Connect to MongoDB
-mongoose.connect(
-  process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD)
-);
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-  console.log("we're connected to the DB!");
-});
+if (process.env.NODE_ENV !== "development") app.use("/api", limiter);
 
 // Body parser middleware
 app.use(express.json());
@@ -78,15 +63,6 @@ app.use(hpp());
 // Use cookie parser
 app.use(cookieParser());
 
-// CSRF protection
-app.use(csurf({ cookie: true }));
-
-// Middleware to pass CSRF token to views
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
-
 // Static files middleware
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -97,37 +73,9 @@ app.set("view engine", "pug");
 app.use("/api/v1/questions", questionRoutes);
 app.use("/api/v1/sets", setsRoutes);
 app.use("/api/v1/EduMod", EduModRoutes);
+app.use("/Dashboard", adminViewRoutes);
 app.use("/", viewRoutes);
 
-// Start the server
-const server = app.listen(process.env.PORT, () => {
-  console.log(`App is listening on port ${process.env.PORT}`);
-});
+app.use("*", globalErrorHandler);
 
-// Global unhandled promise rejection handler
-process.on("unhandledRejection", (err) => {
-  console.log(err.name, err.message);
-  console.log("UNHANDLED REJECTION❗ SHUTTING DOWN....");
-  server.close(() => {
-    return process.exit(1);
-  });
-});
-
-//TODO Move this function to a file in the script folder
-// const fs = require("fs");
-// const Question = require("./models/questionModel");
-
-// async function getQuestionId() {
-//   var arr = [];
-//   try {
-//     const data = await Question.find();
-//     data.forEach((ele) => {
-//       arr.push("'" + ele.id + "'");
-//     });
-//   } catch (err) {
-//     console.log(err);
-//   }
-//   fs.writeFileSync(`${__dirname}/text.txt`, arr.join(","));
-// }
-
-// getQuestionId();
+module.exports = app;

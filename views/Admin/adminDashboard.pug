@@ -4,8 +4,8 @@ block content
 
   .container.mt-4.d-flex.justify-content-center
     .row.row-cols-1.row-cols-md-4.g-4
-      +adminCard("View Questions", "#", "fa-question")
-      +adminCard("View Question Sets", "#", "fa-list-alt")
+      +adminCard("View Questions", "Dashboard/Questions", "fa-question")
+      +adminCard("View Question Sets", "Dashboard/sets", "fa-list-alt")
       +adminCard("Add Question Set", "Dashboard/create/set", "fa-plus")
 
 mixin adminCard(title, href, iconClass)

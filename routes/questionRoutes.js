@@ -1,9 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const sharp = require("sharp");
-const path = require("path");
 const questionController = require("../controller/questionController");
-const { uploadFirebase } = require("../controller/firebaseController");
+const { uploadFirebase } = require("../middleware/firebaseImgMiddelware");
 
 const router = express.Router();
 
@@ -15,7 +13,13 @@ router
   .post(
     upload.single("Q_image"),
     uploadFirebase,
-    questionController.createQuestion,
+    questionController.createQuestion
   );
+
+router
+  .route("/:id")
+  .get(questionController.getQuestion)
+  .patch(questionController.findAndUpdateQuestion)
+  .delete(questionController.deleteQuestion);
 
 module.exports = router;
