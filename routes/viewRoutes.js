@@ -73,7 +73,7 @@ router.get("/:eduMod/:faculty/labs/OSPE/Previous/:id", (req, res, next) => {
 // });
 
 router.get("*", (req, res, next) => {
-  throw new Error("There was an error");
+  throw new AppError("There was an error");
 });
 
 module.exports = router;
