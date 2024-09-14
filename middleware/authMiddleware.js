@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback",
+    callbackURL: `${process.env.BASE_URL}/auth/google/callback`, // Use the full URL dynamically
     passReqToCallback: true
   },
   async function (request, accessToken, refreshToken, profile, done) {
@@ -21,7 +21,7 @@ passport.use(new GoogleStrategy({
         name: profile.displayName,
         email: profile.email,
         password: await bcrypt.hash(profile.id, 12),
-        role: 'student', 
+        role: 'student',
       });
 
       return done(null, newUser);
@@ -32,12 +32,12 @@ passport.use(new GoogleStrategy({
 ));
 
 passport.serializeUser((user, done) => {
-  done(null, user.id); 
+  done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id); 
+    const user = await User.findById(id);
     done(null, user);
   } catch (err) {
     done(err, null);
