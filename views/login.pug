@@ -1,4 +1,4 @@
-extends _header.pug
+extends admin/_header.pug
 
 block content
 
@@ -17,4 +17,7 @@ block content
                                     label.form-label(for='password') Password
                                     input#password.form-control(type='password')
                                 button.btn.btn-primary(type='submit') Login
+                                a.btn.btn-primary.mx-1(href='/auth/google')
+                                    i.me-2(class='fa-brands fa-google') 
+                                    | Login with Google
         script(type='module' src='/js/login.js')

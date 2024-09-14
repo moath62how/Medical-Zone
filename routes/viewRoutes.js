@@ -8,7 +8,7 @@ router.get(["/", "/home"], viewController.getHome);
 
 // Routes for Authentication
 
-router.get("/login", viewController.getLogin); // Still in development
+//// router.get("/login", viewController.getLogin); // Still in development
 
 // Dynamic Routes for Exams
 router.get("/:id([a-fA-F0-9]{24})", viewController.getQuizInfo);

@@ -26,7 +26,11 @@ html(lang='en')
         button.navbar-toggler(type='button', data-bs-toggle='collapse', data-bs-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
           span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
-          a(href='/login').btn.btn-outline-primary Login
+          if user == undefined 
+            a(href='/Dashboard/login').btn.btn-outline-primary Login
+          else 
+            a.btn.btn-danger(href='/auth/logout?dest=/dashboard') Logout  
+            span.mx-1 welcome #{user.name} !
     block content
     script(src='\
     https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js\

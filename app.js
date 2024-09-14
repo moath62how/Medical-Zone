@@ -1,5 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
+const passport = require("passport");
+const session = require('express-session');
 const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -11,10 +13,12 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const questionRoutes = require("./routes/questionRoutes");
 const setsRoutes = require("./routes/setsRoutes");
+const authRoutes = require("./routes/authRoutes");
 const viewRoutes = require("./routes/viewRoutes");
 const adminViewRoutes = require("./routes/adminViewRoutes");
 const EduModRoutes = require("./routes/eduModRoutes");
 const { globalErrorHandler } = require("./errors/globalErrorHandler");
+require("./middleware/authMiddleware");
 
 const app = express();
 
@@ -63,18 +67,35 @@ app.use(hpp());
 // Use cookie parser
 app.use(cookieParser());
 
+
+// Configure express-session
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key', 
+  resave: false, 
+  saveUninitialized: false, 
+  cookie: { 
+    maxAge: 1000 * 60 * 60 * 24 
+  }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 // Static files middleware
 app.use(express.static(path.join(__dirname, "public")));
 
 // Set Pug as the view engine
 app.set("view engine", "pug");
 
-// Routes
+// Routes 
 app.use("/api/v1/questions", questionRoutes);
 app.use("/api/v1/sets", setsRoutes);
 app.use("/api/v1/EduMod", EduModRoutes);
 app.use("/Dashboard", adminViewRoutes);
+app.use("/auth",authRoutes)
 app.use("/", viewRoutes);
+
 
 app.use("*", globalErrorHandler);
 

@@ -19,11 +19,7 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please provide a password"],
     minlength: [8, "password should be more than 8 characters"],
     select: false,
-  },
-  level: {
-    type: Number,
-    enum: [1, 2, 3, 4, 5, 6, 7],
-  },
+  },  
   role: {
     type: String,
     enum: ["admin", "student"],

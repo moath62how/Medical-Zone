@@ -183,16 +183,18 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.getDashboard = (req, res, next) => {
-  res.status(200).render("admin/adminDashboard");
+  res.status(200).render("admin/adminDashboard",{user : req.user});
 };
 
 exports.getCreateSetPage = (req, res, next) => {
-  res.status(200).render("admin/createSet");
+  res.status(200).render("admin/createSet",{user : req.user});
 };
 
 exports.getQuestionPage = tryCatch(async (req, res, next) => {
-  res.status(200).render("admin/viewQuestion");
+  
+  res.status(200).render("admin/viewQuestion",{user : req.user});
 });
+
 
 //!this is not clean code update it
 exports.getPrevious = async (req, res, next) => {

@@ -1,6 +1,8 @@
-extends header.pug
+extends ./Admin/_header.pug
 
-block content
+block content   
 
-    h1.text-danger #{status}
-    h3 #{message}
+    .container
+        img(src="/imgs/401-Error-Unauthorized.png", alt="Error image" class="img-fluid w-25")
+        h1.text-danger #{status}
+        h3 #{message}
