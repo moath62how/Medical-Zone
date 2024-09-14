@@ -183,16 +183,16 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.getDashboard = (req, res, next) => {
-  res.status(200).render("admin/adminDashboard",{user : req.user});
+  res.status(200).render("Admin/adminDashboard",{user : req.user});
 };
 
 exports.getCreateSetPage = (req, res, next) => {
-  res.status(200).render("admin/createSet",{user : req.user});
+  res.status(200).render("Admin/createSet",{user : req.user});
 };
 
 exports.getQuestionPage = tryCatch(async (req, res, next) => {
   
-  res.status(200).render("admin/viewQuestion",{user : req.user});
+  res.status(200).render("Admin/viewQuestion",{user : req.user});
 });
 
 
